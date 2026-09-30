@@ -1,0 +1,23 @@
+
+name: CI_game_pipeline
+on: [push] # Triggers the workflow on code pushes
+
+jobs:
+  # Job 1: Compiles the source code
+  build_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Compile application
+        run: echo "Building code..."
+
+  # Job 2: Runs the testing suites
+  test_job:
+    runs-on: ubuntu-latest
+    needs: build_job # Forces this job to wait until build_job succeeds
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Execute unit tests
+        run: echo "Running tests..."
