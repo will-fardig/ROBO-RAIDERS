@@ -59,15 +59,17 @@ public class Spaceman: MonoBehaviour
         // 1. Move character in all directions (X & Y)
         rb.linearVelocity = moveInput * moveSpeed * Time.fixedDeltaTime;
 
-        // 2. Sprite flipping (Visual direction based on horizontal movement)
+        // 2. Sprite flipping (keeps whatever size you set in the Inspector)
+        Vector3 scale = transform.localScale;
         if (moveInput.x > 0.01f)
         {
-            transform.localScale = new Vector3(1, 1, 1);
+            scale.x = Mathf.Abs(scale.x);
         }
         else if (moveInput.x < -0.01f)
         {
-            transform.localScale = new Vector3(-1, 1, 1);
+            scale.x = -Mathf.Abs(scale.x);
         }
+        transform.localScale = scale;
 
         // 3. Drive Walking/Moving animation state
         if (anim != null)
