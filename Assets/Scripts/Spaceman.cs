@@ -30,6 +30,46 @@ public class Spaceman: MonoBehaviour
     [SerializeField] private float knockbackForce = 6.0f;
     private Coroutine hitCoroutine;
 
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private GameObject specialBulletPrefab;
+    [SerializeField] private Transform firePoint; // Assign an empty child GameObject positioned at weapon barrel
+
+    [Header("Points")]
+    public int points = 500;
+    //weapon stats
+    [Header("Primary Weapon Stats")]
+    [SerializeField] public int prime_wpn_id = 0;
+    [SerializeField] public int prime_wpn_mag_max = 8;
+    [SerializeField] public int prime_wpn_mag = 8;
+    [SerializeField] public int prime_wpn_reserve_max = 80;
+    [SerializeField] public int prime_wpn_reserve = 32;
+    [SerializeField] public int prime_wpn_damage = 4;
+    [Header("Weapon Stats")]
+    //weapon 1
+    [SerializeField] public int wpn1_id = 0;
+    [SerializeField] public int wpn1_mag_max = 8;
+    [SerializeField] public int wpn1_mag = 8;
+    [SerializeField] public int wpn1_reserve_max = 80;
+    [SerializeField] public int wpn1_reserve = 32;
+    [SerializeField] public int wpn1_damage = 4;
+    //weapon 2 - no weapon 2 yet
+    [SerializeField] public int wpn2_id = 0;
+    [SerializeField] public int wpn2_mag_max = 0;
+    [SerializeField] public int wpn2_mag = 0;
+    [SerializeField] public int wpn2_reserve_max = 0;
+    [SerializeField] public int wpn2_reserve = 0;
+    [SerializeField] public int wpn2_damage = 0;
+    //weapon 3 - no weapon 3 yet
+    [SerializeField] public int wpn3_id = 0;
+    [SerializeField] public int wpn3_mag_max = 0;
+    [SerializeField] public int wpn3_mag = 0;
+    [SerializeField] public int wpn3_reserve_max = 0;
+    [SerializeField] public int wpn3_reserve = 0;
+    [SerializeField] public int wpn3_damage = 0;
+    //PACKED BLAST
+    private bool _thunderblast = false;
+    // Direction Tracking
+    private bool faceRight = true;
     //[Header("References")]
     //[SerializeField] private RandomEvents _randomevents;
     //public RespawnSystem _respawnSystem;
@@ -105,7 +145,51 @@ public class Spaceman: MonoBehaviour
     public void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
+        //UPDATE FACERIGHT
+        if (moveInput.x > 0)
+        {
+            //FACING RIGHT
+            faceRight = true;
+        }
+        else if (moveInput.x < 0)
+        {
+            //FACING LEFT
+            faceRight = false;
+        }
     }
+    //SHOOTING MECHANICS
+    //SHOOT BULLET
+    public void OnShoot(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            Shoot();
+        }
+    }
+
+    private void Shoot()
+    {
+        if (bulletPrefab == null || firePoint == null) return;
+
+        if (_thunderblast == false)
+        {
+
+            // Point right (0 deg) if facing right, point left (180 deg) if facing left
+            Quaternion bulletRotation = faceRight ? Quaternion.identity : Quaternion.Euler(0, 180, 0);
+
+            Instantiate(bulletPrefab, firePoint.position, bulletRotation);
+        }
+        else
+        {
+            _thunderblast = false;
+            Quaternion bulletRotation = faceRight ? Quaternion.identity : Quaternion.Euler(0, 180, 0);
+
+            Instantiate(specialBulletPrefab, firePoint.position, bulletRotation);
+
+        }
+    }
+
+
 
     // --- DAMAGE & TRIGGER INTERACTIONS ---
     private void OnTriggerEnter2D(Collider2D collision)
