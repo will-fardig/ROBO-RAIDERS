@@ -9,8 +9,13 @@ public class Spaceman: MonoBehaviour
     private Animator anim;
 
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 300f; // Velocity multiplier for top-down movement
+    [SerializeField] private float maxSpeed = 7f;        // units per second
+    [SerializeField] private float acceleration = 80f;   // how fast you reach top speed
+    [SerializeField] private float deceleration = 100f;  // how fast you stop when you let go
+    [SerializeField] private float turnBoost = 1.5f;     // extra grip when reversing direction
     private Vector2 moveInput;
+    private float knockbackTimer = 0f;
+    [SerializeField] private float knockbackDuration = 0.15f;
 
     [Header("Health & Survival")]
     [SerializeField] private int maxLives = 25;
@@ -56,8 +61,26 @@ public class Spaceman: MonoBehaviour
 
     private void FixedUpdate()
     {
-        // 1. Move character in all directions (X & Y)
-        rb.linearVelocity = moveInput * moveSpeed * Time.fixedDeltaTime;
+        // 1. Snappy movement with acceleration/deceleration
+        if (knockbackTimer > 0f)
+        {
+            knockbackTimer -= Time.fixedDeltaTime; // let knockback play out
+        }
+        else
+        {
+            Vector2 targetVelocity = moveInput.normalized * maxSpeed;
+            Vector2 current = rb.linearVelocity;
+
+            float rate;
+            if (moveInput.sqrMagnitude < 0.01f)
+                rate = deceleration;
+            else if (Vector2.Dot(current, targetVelocity) < 0f)
+                rate = acceleration * turnBoost; // reversing direction
+            else
+                rate = acceleration;
+
+            rb.linearVelocity = Vector2.MoveTowards(current, targetVelocity, rate * Time.fixedDeltaTime);
+        }
 
         // 2. Sprite flipping (keeps whatever size you set in the Inspector)
         Vector3 scale = transform.localScale;
@@ -128,6 +151,7 @@ public class Spaceman: MonoBehaviour
         // Calculate knockback vector away from attacker
         Vector2 knockbackDir = (transform.position - attackerPosition).normalized;
         rb.linearVelocity = Vector2.zero;
+        knockbackTimer = knockbackDuration;
         rb.AddForce(knockbackDir * knockbackForce, ForceMode2D.Impulse);
 
         if (anim != null)
