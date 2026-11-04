@@ -34,6 +34,9 @@ public class Spaceman: MonoBehaviour
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private GameObject specialBulletPrefab;
     [SerializeField] private Transform firePoint; // Assign an empty child GameObject positioned at weapon barrel
+    [Header("Aiming")]
+    [SerializeField] private float muzzleDistance = 0.6f; // how far from the body bullets appear
+    [SerializeField] private float muzzleHeight = 0f;     // raise this if the gun is above his center
 
     [Header("Points")]
     public int points = 500;
@@ -129,16 +132,10 @@ public class Spaceman: MonoBehaviour
             rb.linearVelocity = Vector2.MoveTowards(current, targetVelocity, rate * Time.fixedDeltaTime);
         }
 
-        // 2. Sprite flipping (keeps whatever size you set in the Inspector)
+        // 2. Face the mouse (top-down shooter style)
+        faceRight = GetAimDirection().x >= 0f;
         Vector3 scale = transform.localScale;
-        if (moveInput.x > 0.01f)
-        {
-            scale.x = Mathf.Abs(scale.x);
-        }
-        else if (moveInput.x < -0.01f)
-        {
-            scale.x = -Mathf.Abs(scale.x);
-        }
+        scale.x = faceRight ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
         transform.localScale = scale;
 
         // 3. Drive Walking/Moving animation state
@@ -164,6 +161,27 @@ public class Spaceman: MonoBehaviour
             faceRight = false;
         }
     }
+    // --- AIMING ---
+    private Vector2 GetAimOrigin()
+    {
+        return (Vector2)transform.position + Vector2.up * muzzleHeight;
+    }
+
+    private Vector2 GetAimDirection()
+    {
+        if (Mouse.current == null || Camera.main == null)
+            return faceRight ? Vector2.right : Vector2.left;
+
+        Vector2 mouseScreen = Mouse.current.position.ReadValue();
+        Vector2 mouseWorld = Camera.main.ScreenToWorldPoint(mouseScreen);
+        Vector2 dir = mouseWorld - GetAimOrigin();
+
+        // Mouse right on top of the player: keep shooting the way we face
+        if (dir.sqrMagnitude < 0.0001f)
+            return faceRight ? Vector2.right : Vector2.left;
+
+        return dir.normalized;
+    }
     //SHOOTING MECHANICS
     //SHOOT BULLET
     public void OnShoot(InputValue value)
@@ -188,27 +206,22 @@ public class Spaceman: MonoBehaviour
     }
     private void Shoot()
     {
-        if (bulletPrefab == null || firePoint == null) return;
+        if (bulletPrefab == null) return;
+
+        Vector2 dir = GetAimDirection();
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        Quaternion bulletRotation = Quaternion.Euler(0f, 0f, angle);
+        Vector2 spawnPos = GetAimOrigin() + dir * muzzleDistance;
 
         if (_thunderblast == false)
         {
-            if (prime_wpn_mag > 0) //check for mag ammo
-            {
-                //minus 1 ammo
-                prime_wpn_mag -= 1;
-                // Point right (0 deg) if facing right, point left (180 deg) if facing left
-                Quaternion bulletRotation = faceRight ? Quaternion.identity : Quaternion.Euler(0, 180, 0);
-
-                Instantiate(bulletPrefab, firePoint.position, bulletRotation);
-            }
+            prime_wpn_mag -= 1;
+            Instantiate(bulletPrefab, spawnPos, bulletRotation);
         }
         else
         {
             _thunderblast = false;
-            Quaternion bulletRotation = faceRight ? Quaternion.identity : Quaternion.Euler(0, 180, 0);
-
-            Instantiate(specialBulletPrefab, firePoint.position, bulletRotation);
-
+            Instantiate(specialBulletPrefab, spawnPos, bulletRotation);
         }
     }
     //WEAPON RELOADS

@@ -29,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 7243509196987217058}
   serializedVersion: 2
   m_LocalRotation: {x: -0.0037184688, y: 0.00371847, z: -0.70709705, w: 0.70709705}
-  m_LocalPosition: {x: 2.22, y: 0.41, z: 0.02}
-  m_LocalScale: {x: 0.3, y: 0.5, z: 0.3}
+  m_LocalPosition: {x: 2.5862, y: 0.5974, z: 0.0161}
+  m_LocalScale: {x: 0.67485005, y: 0.1338, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -155,6 +155,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   _speed: 5
   _lifetime: 3
+  _runnerchase: {fileID: 0}
+  _spaceman: {fileID: 0}
 --- !u!50 &284353217887319197
 Rigidbody2D:
   serializedVersion: 5
@@ -170,7 +172,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
