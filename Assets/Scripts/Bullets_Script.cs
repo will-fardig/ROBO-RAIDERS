@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Bullets_Script : MonoBehaviour
 {
-    [SerializeField] private float _speed = 5.0f;
+    [SerializeField] private float _speed = 8.0f;
     [SerializeField] private float _lifetime = 3.0f;
     private string EnemyTag = "Enemy";
     private Rigidbody2D _rb;
