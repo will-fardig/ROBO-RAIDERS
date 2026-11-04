@@ -311,6 +311,7 @@ public class Spaceman: MonoBehaviour
     public void TakeDamage(int damageAmount, Vector3 attackerPosition)
     {
         lives -= damageAmount;
+        CamFollow.Shake(0.2f, 0.2f);
         Debug.Log($"Player took damage! Remaining Lives: {lives}");
 
         if (hitCoroutine != null) StopCoroutine(hitCoroutine);
