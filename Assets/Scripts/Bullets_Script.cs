@@ -39,6 +39,7 @@ public class Bullets_Script : MonoBehaviour
                 Debug.LogError("Enemy collider has no RunnerChase component!", collision.gameObject);
                 return;
             }
+            if (enemy.RunnerHealth <= 0) return;
 
             enemy.RunnerHealth -= _spaceman.prime_wpn_damage;
 
@@ -49,6 +50,7 @@ public class Bullets_Script : MonoBehaviour
             {
                 Destroy(enemy.gameObject);
                 _spaceman.points += 100;
+                _spaceman.AddScrap(1);
             }
 
             Destroy(gameObject);

@@ -40,6 +40,10 @@ public class Spaceman: MonoBehaviour
 
     [Header("Points")]
     public int points = 500;
+    [Header("Scrap")]
+    [SerializeField] private int scrap = 0;
+    [SerializeField] private ScrapCounterUI scrapUI;
+    public int Scrap => scrap;
     //weapon stats
     [Header("Primary Weapon Stats")]
     [SerializeField] public int prime_wpn_id = 0;
@@ -340,6 +344,13 @@ public class Spaceman: MonoBehaviour
     }
 
     // --- UTILITIES & GAME STATE ---
+    public void AddScrap(int amount)
+    {
+        scrap += amount;
+        if (scrapUI != null) scrapUI.UpdateScrap(scrap);
+        Debug.Log($"Scrap collected! Total: {scrap}");
+    }
+
     public void Heal(int amount)
     {
         lives = Mathf.Min(lives + amount, maxLives);
