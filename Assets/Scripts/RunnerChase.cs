@@ -17,6 +17,8 @@ public class RunnerChase : MonoBehaviour
     private float pauseTimer = 0f;
     //Heatlh
     [SerializeField] public float RunnerHealth = 20;
+    [Header("Drops")]
+    [SerializeField] private GameObject scrapPrefab;
 
     private void Awake()
     {
@@ -74,5 +76,12 @@ public class RunnerChase : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
+    }
+
+    public void Die()
+    {
+        if (scrapPrefab != null)
+            Instantiate(scrapPrefab, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 }
