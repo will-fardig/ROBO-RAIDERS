@@ -161,6 +161,17 @@
                 },
                 {
                     "name": "",
+                    "id": "7aa124b8-0fd0-41d8-93eb-8aeea9e94597",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Shoot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "bda83739-214e-48d7-a54f-54e76097d7a6",
                     "path": "<Keyboard>/space",
                     "interactions": "",
