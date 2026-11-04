@@ -19,6 +19,8 @@ public class RunnerChase : MonoBehaviour
     [SerializeField] public float RunnerHealth = 20;
     [Header("Drops")]
     [SerializeField] private GameObject scrapPrefab;
+    [SerializeField] private int scrapDropCount = 1;
+    [SerializeField] private float scatterRadius = 0.5f;
 
     private void Awake()
     {
@@ -81,7 +83,14 @@ public class RunnerChase : MonoBehaviour
     public void Die()
     {
         if (scrapPrefab != null)
-            Instantiate(scrapPrefab, transform.position, Quaternion.identity);
+        {
+            for (int i = 0; i < scrapDropCount; i++)
+            {
+                // first piece lands right where it died, the rest scatter around it
+                Vector2 offset = (i == 0) ? Vector2.zero : Random.insideUnitCircle * scatterRadius;
+                Instantiate(scrapPrefab, (Vector2)sr.bounds.center + offset, Quaternion.identity);
+            }
+        }
         Destroy(gameObject);
     }
 }
