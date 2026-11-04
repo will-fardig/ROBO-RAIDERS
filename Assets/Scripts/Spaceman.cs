@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 public class Spaceman: MonoBehaviour
@@ -30,9 +31,55 @@ public class Spaceman: MonoBehaviour
     [SerializeField] private float knockbackForce = 6.0f;
     private Coroutine hitCoroutine;
 
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private GameObject specialBulletPrefab;
+    [SerializeField] private Transform firePoint; // Assign an empty child GameObject positioned at weapon barrel
+
+    [Header("Points")]
+    public int points = 500;
+    //weapon stats
+    [Header("Primary Weapon Stats")]
+    [SerializeField] public int prime_wpn_id = 0;
+    [SerializeField] public int prime_wpn_mag_max = 8;
+    [SerializeField]public int prime_wpn_mag = 8;
+    [SerializeField]public int prime_wpn_reserve_max = 80;
+    [SerializeField]public int prime_wpn_reserve = 32;
+    [SerializeField] public int prime_wpn_damage = 4;
+    [SerializeField] private float prime_wpn_reloadTime = 2.0f;
+    [Header("Weapon Stats")]
+    //weapon 1
+    [SerializeField] public int wpn1_id = 0;
+    [SerializeField] public int wpn1_mag_max = 8;
+    [SerializeField] public int wpn1_mag = 8;
+    [SerializeField] public int wpn1_reserve_max = 80;
+    [SerializeField] public int wpn1_reserve = 32;
+    [SerializeField] public int wpn1_damage = 4;
+    [SerializeField] private float wp1_reloadTime = 0f;
+    //weapon 2 - no weapon 2 yet
+    [SerializeField] public int wpn2_id = 0;
+    [SerializeField] public int wpn2_mag_max = 0;
+    [SerializeField] public int wpn2_mag = 0;
+    [SerializeField] public int wpn2_reserve_max = 0;
+    [SerializeField] public int wpn2_reserve = 0;
+    [SerializeField] public int wpn2_damage = 0;
+    [SerializeField] private float wp2_reloadTime = 0f;
+    //weapon 3 - no weapon 3 yet
+    [SerializeField] public int wpn3_id = 0;
+    [SerializeField] public int wpn3_mag_max = 0;
+    [SerializeField] public int wpn3_mag = 0;
+    [SerializeField] public int wpn3_reserve_max = 0;
+    [SerializeField] public int wpn3_reserve = 0;
+    [SerializeField] public int wpn3_damage = 0;
+    [SerializeField] private float wp3_reloadTime = 0f;
+    //PACKED BLAST
+    private bool _thunderblast = false;
+    // Direction Tracking
+    private bool faceRight = true;
     //[Header("References")]
     //[SerializeField] private RandomEvents _randomevents;
     //public RespawnSystem _respawnSystem;
+    [Header("Reload Settings")]
+    public bool IsReloading = false;
 
     // Tags
     private const string EnemyTag = "Enemy";
@@ -105,7 +152,119 @@ public class Spaceman: MonoBehaviour
     public void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
+        //UPDATE FACERIGHT
+        if (moveInput.x > 0)
+        {
+            //FACING RIGHT
+            faceRight = true;
+        }
+        else if (moveInput.x < 0)
+        {
+            //FACING LEFT
+            faceRight = false;
+        }
     }
+    //SHOOTING MECHANICS
+    //SHOOT BULLET
+    public void OnShoot(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            // Don't shoot while reloading
+            if (IsReloading==true) return;
+            if (prime_wpn_mag > 0)
+            {
+                Shoot();
+            }
+            else if(prime_wpn_mag<=0 && prime_wpn_reserve>0){
+                StartReload(); //reload time
+
+            }
+            else
+            {
+                Debug.Log("No Ammo");
+            }
+        }
+    }
+    private void Shoot()
+    {
+        if (bulletPrefab == null || firePoint == null) return;
+
+        if (_thunderblast == false)
+        {
+            if (prime_wpn_mag > 0) //check for mag ammo
+            {
+                //minus 1 ammo
+                prime_wpn_mag -= 1;
+                // Point right (0 deg) if facing right, point left (180 deg) if facing left
+                Quaternion bulletRotation = faceRight ? Quaternion.identity : Quaternion.Euler(0, 180, 0);
+
+                Instantiate(bulletPrefab, firePoint.position, bulletRotation);
+            }
+        }
+        else
+        {
+            _thunderblast = false;
+            Quaternion bulletRotation = faceRight ? Quaternion.identity : Quaternion.Euler(0, 180, 0);
+
+            Instantiate(specialBulletPrefab, firePoint.position, bulletRotation);
+
+        }
+    }
+    //WEAPON RELOADS
+    private void OnReload(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            if (prime_wpn_mag < prime_wpn_mag_max && prime_wpn_reserve > 0)
+            {
+                StartReload(); //reload time
+
+            }
+            else
+            {
+                Debug.Log("No Ammo");
+            }
+        }
+    }
+    private void StartReload()
+    {
+        if (IsReloading==true) return;
+
+        // Check if magazine is already full
+        if (prime_wpn_mag >= prime_wpn_mag_max) return;
+
+        // Check if reserve ammo is empty
+        if (prime_wpn_reserve <= 0) return;
+
+        StartCoroutine(ReloadRoutine());
+    }
+
+    private IEnumerator ReloadRoutine()
+    {
+        IsReloading = true;
+
+        Debug.Log("Reloading...");
+
+        // Wait for reload duration
+        yield return new WaitForSeconds(prime_wpn_reloadTime);
+
+        // Calculate how much ammo is needed
+        int ammoNeeded = prime_wpn_mag_max - prime_wpn_mag;
+
+        // Calculate how much ammo can be transferred
+        int ammoToLoad = Mathf.Min(ammoNeeded, prime_wpn_reserve);
+
+        // Transfer ammunition
+        prime_wpn_mag += ammoToLoad;
+        prime_wpn_reserve -= ammoToLoad;
+
+        IsReloading = false;
+
+        Debug.Log($"Reload complete! Magazine: {prime_wpn_mag} | Reserve: {prime_wpn_reserve}");
+    }
+
+
 
     // --- DAMAGE & TRIGGER INTERACTIONS ---
     private void OnTriggerEnter2D(Collider2D collision)

@@ -15,6 +15,8 @@ public class RunnerChase : MonoBehaviour
     private SpriteRenderer sr;
     private Transform player;
     private float pauseTimer = 0f;
+    //Heatlh
+    [SerializeField] public float RunnerHealth = 20;
 
     private void Awake()
     {
