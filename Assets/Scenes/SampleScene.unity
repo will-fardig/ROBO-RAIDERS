@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -525,7 +525,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 7.03125
+  orthographic size: 6.4375
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -571,7 +571,6 @@ MonoBehaviour:
   target: {fileID: 1392688780}
   smoothTime: 0.15
   offset: {x: 0, y: 0}
-  pixelsPerUnit: 32
 --- !u!114 &519420034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -589,7 +588,7 @@ MonoBehaviour:
   m_RefResolutionX: 640
   m_RefResolutionY: 360
   m_CropFrame: 0
-  m_GridSnapping: 2
+  m_GridSnapping: 0
   m_FilterMode: 0
   m_UpscaleRT: 0
   m_PixelSnapping: 0
@@ -902,7 +901,7 @@ TilemapRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 75e5cccabfee7d94a8f9de92b66d4e89, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9642,8 +9641,6 @@ GameObject:
   - component: {fileID: 1392688782}
   - component: {fileID: 1392688783}
   - component: {fileID: 1392688784}
-  - component: {fileID: 1392688786}
-  - component: {fileID: 1392688785}
   m_Layer: 0
   m_Name: Spaceman_1
   m_TagString: Untagged
@@ -9751,6 +9748,40 @@ MonoBehaviour:
   bulletPrefab: {fileID: 7243509196987217058, guid: 94bb299287c33ac4490f7826a0c1f77d, type: 3}
   specialBulletPrefab: {fileID: 7243509196987217058, guid: 94bb299287c33ac4490f7826a0c1f77d, type: 3}
   firePoint: {fileID: 1352883779}
+  muzzleDistance: 0.6
+  muzzleHeight: 0
+  points: 500
+  scrap: 0
+  scrapUI: {fileID: 1551344832}
+  prime_wpn_id: 0
+  prime_wpn_mag_max: 8
+  prime_wpn_mag: 8
+  prime_wpn_reserve_max: 80
+  prime_wpn_reserve: 32
+  prime_wpn_damage: 4
+  prime_wpn_reloadTime: 2
+  wpn1_id: 0
+  wpn1_mag_max: 8
+  wpn1_mag: 8
+  wpn1_reserve_max: 80
+  wpn1_reserve: 32
+  wpn1_damage: 4
+  wp1_reloadTime: 0
+  wpn2_id: 0
+  wpn2_mag_max: 0
+  wpn2_mag: 0
+  wpn2_reserve_max: 0
+  wpn2_reserve: 0
+  wpn2_damage: 0
+  wp2_reloadTime: 0
+  wpn3_id: 0
+  wpn3_mag_max: 0
+  wpn3_mag: 0
+  wpn3_reserve_max: 0
+  wpn3_reserve: 0
+  wpn3_damage: 0
+  wp3_reloadTime: 0
+  IsReloading: 0
 --- !u!50 &1392688782
 Rigidbody2D:
   serializedVersion: 5
@@ -9895,7 +9926,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0.0627451, g: 0.09411765, b: 0.15294118, a: 0.92156863}
@@ -9933,7 +9964,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a023cc1e184b18d42ac369c03fe769e7, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScrapCounterUI
   scrapValueText: {fileID: 1919874922}
 --- !u!1 &1581490245
@@ -10332,7 +10363,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

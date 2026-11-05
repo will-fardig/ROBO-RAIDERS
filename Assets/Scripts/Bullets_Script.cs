@@ -40,16 +40,13 @@ public class Bullets_Script : MonoBehaviour
                 return;
             }
 
-            enemy.RunnerHealth -= _spaceman.prime_wpn_damage;
+            if (enemy.RunnerHealth <= 0) return;
+            bool killed = enemy.TakeHit(_spaceman.prime_wpn_damage, transform.right);
+
+            _spaceman.points += 10;
+            if (killed) _spaceman.points += 100;
 
             Debug.Log("Damage dealt. Remaining health: " + enemy.RunnerHealth);
-            _spaceman.points += 10;
-
-            if (enemy.RunnerHealth <= 0)
-            {
-                Destroy(enemy.gameObject);
-                _spaceman.points += 100;
-            }
 
             Destroy(gameObject);
         }
