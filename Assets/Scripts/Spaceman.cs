@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 
 public class Spaceman: MonoBehaviour
 {
@@ -37,6 +38,13 @@ public class Spaceman: MonoBehaviour
     [Header("Aiming")]
     [SerializeField] private float muzzleDistance = 0.6f; // how far from the body bullets appear
     [SerializeField] private float muzzleHeight = 0f;     // raise this if the gun is above his center
+
+    [Header("Map Bounds")]
+    [Tooltip("The ground tilemap. The player can't walk past its painted edges.")]
+    [SerializeField] private Tilemap boundsTilemap;
+    private Bounds mapBounds;
+    private bool hasBounds;
+    private Collider2D bodyCollider;
 
     [Header("Points")]
     public int points = 500;
@@ -97,6 +105,7 @@ public class Spaceman: MonoBehaviour
         Application.targetFrameRate = -1;
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        bodyCollider = GetComponent<Collider2D>();
 
         // Ensure 2D Top-Down physics settings
         rb.gravityScale = 0f;
@@ -111,6 +120,48 @@ public class Spaceman: MonoBehaviour
         {
             playerInput.SwitchCurrentActionMap(playerInput.defaultActionMap);
         }
+        if (boundsTilemap != null)
+        {
+            mapBounds = CamFollow.GetTilemapWorldBounds(boundsTilemap);
+            hasBounds = true;
+        }
+    }
+
+    // --- MAP BOUNDS ---
+    private void KeepInsideMap()
+    {
+        if (!hasBounds) return;
+
+        // How far the hitbox reaches from the pivot on each side
+        Vector2 pivot = transform.position;
+        Vector2 reachMin = Vector2.zero, reachMax = Vector2.zero;
+        if (bodyCollider != null)
+        {
+            reachMin = (Vector2)bodyCollider.bounds.min - pivot;
+            reachMax = (Vector2)bodyCollider.bounds.max - pivot;
+        }
+
+        float minX = mapBounds.min.x - reachMin.x;
+        float maxX = mapBounds.max.x - reachMax.x;
+        float minY = mapBounds.min.y - reachMin.y;
+        float maxY = mapBounds.max.y - reachMax.y;
+
+        Vector2 pos = rb.position;
+
+        // Already outside (spawned there, shoved by an enemy): snap back in
+        Vector2 clamped = new Vector2(Mathf.Clamp(pos.x, minX, maxX), Mathf.Clamp(pos.y, minY, maxY));
+        if (clamped != pos)
+        {
+            rb.position = clamped;
+            pos = clamped;
+        }
+
+        // Cap velocity so this physics step stops exactly at the edge (covers knockback too)
+        float dt = Time.fixedDeltaTime;
+        Vector2 vel = rb.linearVelocity;
+        vel.x = Mathf.Clamp(vel.x, (minX - pos.x) / dt, (maxX - pos.x) / dt);
+        vel.y = Mathf.Clamp(vel.y, (minY - pos.y) / dt, (maxY - pos.y) / dt);
+        rb.linearVelocity = vel;
     }
 
     private void FixedUpdate()
@@ -135,6 +186,7 @@ public class Spaceman: MonoBehaviour
 
             rb.linearVelocity = Vector2.MoveTowards(current, targetVelocity, rate * Time.fixedDeltaTime);
         }
+        KeepInsideMap();
 
         // 2. Face the mouse (top-down shooter style)
         faceRight = GetAimDirection().x >= 0f;

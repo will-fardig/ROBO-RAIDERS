@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e8565c91924ede49b28731efc855d6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  _speed: 5
+  _speed: 7
   _lifetime: 3
   _runnerchase: {fileID: 0}
   _spaceman: {fileID: 0}
