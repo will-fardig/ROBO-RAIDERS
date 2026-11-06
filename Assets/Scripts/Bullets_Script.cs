@@ -41,10 +41,9 @@ public class Bullets_Script : MonoBehaviour
             }
 
             if (enemy.RunnerHealth <= 0) return;
-            bool killed = enemy.TakeHit(_spaceman.prime_wpn_damage, transform.right);
-
-            _spaceman.points += 10;
-            if (killed) _spaceman.points += 100;
+            bool killed = enemy.TakeHit(_spaceman.prime_wpn_damage *_spaceman.wpn_damage_multiplier, transform.right);
+            _spaceman.AddScrap(10 * _spaceman.wpn_damage_multiplier * _spaceman.point_multiplier);
+            if (killed) _spaceman.AddScrap(100 * _spaceman.point_multiplier);
 
             Debug.Log("Damage dealt. Remaining health: " + enemy.RunnerHealth);
 

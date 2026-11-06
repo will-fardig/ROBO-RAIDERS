@@ -46,11 +46,10 @@ public class Spaceman: MonoBehaviour
     private bool hasBounds;
     private Collider2D bodyCollider;
 
-    [Header("Points")]
-    public int points = 500;
-    [Header("Scrap")]
-    [SerializeField] private int scrap = 0;
+    [Header("Scrap-Points")]
+    [SerializeField] public int scrap = 500;
     [SerializeField] private ScrapCounterUI scrapUI;
+    [SerializeField] public int point_multiplier = 1;
     public int Scrap => scrap;
     //weapon stats
     [Header("Primary Weapon Stats")]
@@ -61,6 +60,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField]public int prime_wpn_reserve = 32;
     [SerializeField] public int prime_wpn_damage = 4;
     [SerializeField] private float prime_wpn_reloadTime = 2.0f;
+    [SerializeField] public int wpn_damage_multiplier = 1;
     [Header("Weapon Stats")]
     //weapon 1
     [SerializeField] public int wpn1_id = 0;
@@ -99,6 +99,7 @@ public class Spaceman: MonoBehaviour
     // Tags
     private const string EnemyTag = "Enemy";
     private const string AppleTag = "Apple";
+    private const string Lava_hazardTag = "Lava_Hazards";
 
     private void Awake()
     {
@@ -349,6 +350,11 @@ public class Spaceman: MonoBehaviour
             Debug.Log($"Apple collected! Lives: {Lives} | Apples: {ItemsCount}");
         }
         */
+        if (collision.CompareTag(Lava_hazardTag))
+        {
+            lives -= 1;
+            Debug.Log("Get out of the lava");
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

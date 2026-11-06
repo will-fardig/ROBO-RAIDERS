@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ScrapPickup : MonoBehaviour
 {
-    [SerializeField] private int value = 1;
+    [SerializeField] private int _value = 10;
 
     [Header("Bob")]
     [SerializeField] private float bobHeight = 0.1f;
@@ -82,7 +82,7 @@ public class ScrapPickup : MonoBehaviour
     {
         if (collected) return;
         collected = true;
-        if (spaceman != null) spaceman.AddScrap(value);
+        if (spaceman != null) spaceman.AddScrap(_value* spaceman.point_multiplier);
         Destroy(gameObject);
     }
 
