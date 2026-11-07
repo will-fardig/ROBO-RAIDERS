@@ -81,7 +81,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_MaskInteraction: 0
   m_Sprite: {fileID: -8055743256804430980, guid: 6bae9476fd4d4734fbe78adbc7376df6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -142,6 +142,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffa9a4d02f724104d855f6d08fc48453, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScrapPickup
-  value: 1
+  _value: 10
   bobHeight: 0.1
   bobSpeed: 3
+  magnetRange: 2.5
+  startSpeed: 2
+  pullAcceleration: 25
+  spawnDelay: 0.3

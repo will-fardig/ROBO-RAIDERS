@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
@@ -50,6 +51,17 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int scrap = 500;
     [SerializeField] private ScrapCounterUI scrapUI;
     [SerializeField] public int point_multiplier = 1;
+
+    //PERK-A-COLAS
+    /*Double Trouble Tonic = Double tap 
+    Power pop = Juggernog
+    Comeback Cola = Quick Revive
+    Fizzy Fastness = Speed Cola*/
+
+    [Header("Perks")]
+    [SerializeField] public int perk_count = 0;
+    [SerializeField] public int max_perk_count =4;
+    [SerializeField] public Dictionary<int, string> PERKS_ORDER = new Dictionary<int, string>();
     public int Scrap => scrap;
     //weapon stats
     [Header("Primary Weapon Stats")]
@@ -61,6 +73,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int prime_wpn_damage = 4;
     [SerializeField] private float prime_wpn_reloadTime = 2.0f;
     [SerializeField] public int wpn_damage_multiplier = 1;
+    [SerializeField] public bool wpn_prime_upgraded = false;
     [Header("Weapon Stats")]
     //weapon 1
     [SerializeField] public int wpn1_id = 0;
@@ -70,6 +83,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int wpn1_reserve = 32;
     [SerializeField] public int wpn1_damage = 4;
     [SerializeField] private float wp1_reloadTime = 0f;
+    [SerializeField] public bool wp1_upgraded = false;
     //weapon 2 - no weapon 2 yet
     [SerializeField] public int wpn2_id = 0;
     [SerializeField] public int wpn2_mag_max = 0;
@@ -78,6 +92,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int wpn2_reserve = 0;
     [SerializeField] public int wpn2_damage = 0;
     [SerializeField] private float wp2_reloadTime = 0f;
+    [SerializeField] public bool wp2_upgraded = false;
     //weapon 3 - no weapon 3 yet
     [SerializeField] public int wpn3_id = 0;
     [SerializeField] public int wpn3_mag_max = 0;
@@ -86,6 +101,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int wpn3_reserve = 0;
     [SerializeField] public int wpn3_damage = 0;
     [SerializeField] private float wp3_reloadTime = 0f;
+    [SerializeField] public bool wp3_upgraded = false;
     //PACKED BLAST
     private bool _thunderblast = false;
     // Direction Tracking
