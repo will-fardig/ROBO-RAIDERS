@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
@@ -46,11 +47,21 @@ public class Spaceman: MonoBehaviour
     private bool hasBounds;
     private Collider2D bodyCollider;
 
-    [Header("Points")]
-    public int points = 500;
-    [Header("Scrap")]
-    [SerializeField] private int scrap = 0;
+    [Header("Scrap-Points")]
+    [SerializeField] public int scrap = 500;
     [SerializeField] private ScrapCounterUI scrapUI;
+    [SerializeField] public int point_multiplier = 1;
+
+    //PERK-A-COLAS
+    /*Double Trouble Tonic = Double tap 
+    Power pop = Juggernog
+    Comeback Cola = Quick Revive
+    Fizzy Fastness = Speed Cola*/
+
+    [Header("Perks")]
+    [SerializeField] public int perk_count = 0;
+    [SerializeField] public int max_perk_count =4;
+    [SerializeField] public Dictionary<int, string> PERKS_ORDER = new Dictionary<int, string>();
     public int Scrap => scrap;
     //weapon stats
     [Header("Primary Weapon Stats")]
@@ -61,6 +72,8 @@ public class Spaceman: MonoBehaviour
     [SerializeField]public int prime_wpn_reserve = 32;
     [SerializeField] public int prime_wpn_damage = 4;
     [SerializeField] private float prime_wpn_reloadTime = 2.0f;
+    [SerializeField] public int wpn_damage_multiplier = 1;
+    [SerializeField] public bool wpn_prime_upgraded = false;
     [Header("Weapon Stats")]
     //weapon 1
     [SerializeField] public int wpn1_id = 0;
@@ -70,6 +83,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int wpn1_reserve = 32;
     [SerializeField] public int wpn1_damage = 4;
     [SerializeField] private float wp1_reloadTime = 0f;
+    [SerializeField] public bool wp1_upgraded = false;
     //weapon 2 - no weapon 2 yet
     [SerializeField] public int wpn2_id = 0;
     [SerializeField] public int wpn2_mag_max = 0;
@@ -78,6 +92,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int wpn2_reserve = 0;
     [SerializeField] public int wpn2_damage = 0;
     [SerializeField] private float wp2_reloadTime = 0f;
+    [SerializeField] public bool wp2_upgraded = false;
     //weapon 3 - no weapon 3 yet
     [SerializeField] public int wpn3_id = 0;
     [SerializeField] public int wpn3_mag_max = 0;
@@ -86,6 +101,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int wpn3_reserve = 0;
     [SerializeField] public int wpn3_damage = 0;
     [SerializeField] private float wp3_reloadTime = 0f;
+    [SerializeField] public bool wp3_upgraded = false;
     //PACKED BLAST
     private bool _thunderblast = false;
     // Direction Tracking
@@ -96,9 +112,29 @@ public class Spaceman: MonoBehaviour
     [Header("Reload Settings")]
     public bool IsReloading = false;
 
+    [Header("Auto Mode")]
+    [Tooltip("On: the player runs from enemies and shoots by itself. Off: normal mouse/keyboard control.")]
+    public bool autoMode = false;
+    [Tooltip("Runs away from enemies closer than this.")]
+    [SerializeField] private float fleeRange = 4f;
+    [Tooltip("Shoots at the closest enemy within this distance.")]
+    [SerializeField] private float shootRange = 8f;
+    [SerializeField] private float shotsPerSecond = 4f;
+    [Tooltip("Steers away from the map edges so it doesn't get stuck in corners.")]
+    [SerializeField] private float edgeMargin = 1.5f;
+    [SerializeField] private float scanInterval = 0.2f;
+
+    private GameObject[] autoEnemies = new GameObject[0];
+    private Transform autoTarget;
+    private Vector2 autoAimDirection = Vector2.right;
+    private float nextScanTime = 0f;
+    private float nextShotTime = 0f;
+    private bool wasAutoMode = false;
+
     // Tags
     private const string EnemyTag = "Enemy";
     private const string AppleTag = "Apple";
+    private const string Lava_hazardTag = "Lava_Hazards";
 
     private void Awake()
     {
@@ -164,6 +200,119 @@ public class Spaceman: MonoBehaviour
         rb.linearVelocity = vel;
     }
 
+    private void Update()
+    {
+        if (!autoMode)
+        {
+            // Just switched back to manual: stop the leftover auto movement
+            if (wasAutoMode) moveInput = Vector2.zero;
+            wasAutoMode = false;
+            return;
+        }
+        wasAutoMode = true;
+
+        if (Time.time >= nextScanTime)
+        {
+            autoEnemies = GameObject.FindGameObjectsWithTag(EnemyTag);
+            nextScanTime = Time.time + scanInterval;
+        }
+
+        autoTarget = FindNearestEnemy(shootRange);
+        moveInput = GetFleeDirection();
+
+        // Aim at the target, or where we're walking if there's nothing to shoot
+        if (autoTarget != null)
+        {
+            Vector2 toTarget = EnemyCenter(autoTarget) - GetAimOrigin();
+            if (toTarget.sqrMagnitude > 0.0001f) autoAimDirection = toTarget.normalized;
+        }
+        else if (moveInput.sqrMagnitude > 0.01f)
+        {
+            autoAimDirection = moveInput.normalized;
+        }
+
+        AutoShoot();
+    }
+
+    // --- AUTO MODE HELPERS ---
+    private Transform FindNearestEnemy(float range)
+    {
+        Transform nearest = null;
+        float nearestDist = range;
+        Vector2 me = transform.position;
+
+        foreach (GameObject enemy in autoEnemies)
+        {
+            if (enemy == null) continue; // destroyed since the last scan
+            float d = Vector2.Distance(me, EnemyCenter(enemy.transform));
+            if (d < nearestDist)
+            {
+                nearestDist = d;
+                nearest = enemy.transform;
+            }
+        }
+        return nearest;
+    }
+
+    private Vector2 GetFleeDirection()
+    {
+        Vector2 me = transform.position;
+        Vector2 flee = Vector2.zero;
+
+        // Push away from every enemy inside flee range, harder the closer it is
+        foreach (GameObject enemy in autoEnemies)
+        {
+            if (enemy == null) continue;
+            Vector2 away = me - EnemyCenter(enemy.transform);
+            float d = away.magnitude;
+            if (d < 0.01f || d > fleeRange) continue;
+            flee += (away / d) * (1f - d / fleeRange);
+        }
+
+        if (flee.sqrMagnitude < 0.0001f) return Vector2.zero; // nothing close: stand and shoot
+
+        // Push away from map edges so it slides along walls instead of getting pinned
+        if (hasBounds)
+        {
+            if (me.x - mapBounds.min.x < edgeMargin) flee.x += 1f;
+            if (mapBounds.max.x - me.x < edgeMargin) flee.x -= 1f;
+            if (me.y - mapBounds.min.y < edgeMargin) flee.y += 1f;
+            if (mapBounds.max.y - me.y < edgeMargin) flee.y -= 1f;
+        }
+
+        return flee.sqrMagnitude < 0.01f ? Vector2.zero : flee.normalized;
+    }
+
+    private void AutoShoot()
+    {
+        if (IsReloading) return;
+
+        if (autoTarget == null)
+        {
+            // Nothing to shoot: top off the magazine
+            if (prime_wpn_mag < prime_wpn_mag_max && prime_wpn_reserve > 0) StartReload();
+            return;
+        }
+
+        if (Time.time < nextShotTime) return;
+
+        if (prime_wpn_mag > 0)
+        {
+            Shoot();
+            nextShotTime = Time.time + 1f / Mathf.Max(0.1f, shotsPerSecond);
+        }
+        else if (prime_wpn_reserve > 0)
+        {
+            StartReload();
+        }
+    }
+
+    private Vector2 EnemyCenter(Transform enemy)
+    {
+        Collider2D col = enemy.GetComponent<Collider2D>();
+        return col != null ? (Vector2)col.bounds.center : (Vector2)enemy.position;
+    }
+
     private void FixedUpdate()
     {
         // 1. Snappy movement with acceleration/deceleration
@@ -204,6 +353,7 @@ public class Spaceman: MonoBehaviour
     // --- INPUT SYSTEM CALLBACK ---
     public void OnMove(InputValue value)
     {
+        if (autoMode) return;
         moveInput = value.Get<Vector2>();
         //UPDATE FACERIGHT
         if (moveInput.x > 0)
@@ -225,6 +375,8 @@ public class Spaceman: MonoBehaviour
 
     private Vector2 GetAimDirection()
     {
+        if (autoMode) return autoAimDirection;
+
         if (Mouse.current == null || Camera.main == null)
             return faceRight ? Vector2.right : Vector2.left;
 
@@ -242,6 +394,7 @@ public class Spaceman: MonoBehaviour
     //SHOOT BULLET
     public void OnShoot(InputValue value)
     {
+        if (autoMode) return;
         if (value.isPressed)
         {
             // Don't shoot while reloading
@@ -283,6 +436,7 @@ public class Spaceman: MonoBehaviour
     //WEAPON RELOADS
     private void OnReload(InputValue value)
     {
+        if (autoMode) return;
         if (value.isPressed)
         {
             if (prime_wpn_mag < prime_wpn_mag_max && prime_wpn_reserve > 0)
@@ -349,6 +503,11 @@ public class Spaceman: MonoBehaviour
             Debug.Log($"Apple collected! Lives: {Lives} | Apples: {ItemsCount}");
         }
         */
+        if (collision.CompareTag(Lava_hazardTag))
+        {
+            lives -= 1;
+            Debug.Log("Get out of the lava");
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
