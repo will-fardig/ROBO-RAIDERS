@@ -133,19 +133,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8573912678766947569, guid: 9a4e93ed3dd002c4198fce208f59d613, type: 3}
       propertyPath: m_LocalPosition.x
-<<<<<<< HEAD
       value: -21.45
       objectReference: {fileID: 0}
     - target: {fileID: 8573912678766947569, guid: 9a4e93ed3dd002c4198fce208f59d613, type: 3}
       propertyPath: m_LocalPosition.y
       value: -0.53
-=======
       value: -20.62
       objectReference: {fileID: 0}
     - target: {fileID: 8573912678766947569, guid: 9a4e93ed3dd002c4198fce208f59d613, type: 3}
       propertyPath: m_LocalPosition.y
       value: -2.3
->>>>>>> origin/main
       objectReference: {fileID: 0}
     - target: {fileID: 8573912678766947569, guid: 9a4e93ed3dd002c4198fce208f59d613, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1642,11 +1639,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8573912678766947569, guid: 9a4e93ed3dd002c4198fce208f59d613, type: 3}
       propertyPath: m_LocalPosition.x
-<<<<<<< HEAD
       value: 23.86
-=======
       value: 20.82
->>>>>>> origin/main
       objectReference: {fileID: 0}
     - target: {fileID: 8573912678766947569, guid: 9a4e93ed3dd002c4198fce208f59d613, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2027,11 +2021,8 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-<<<<<<< HEAD
   orthographic size: 6.484375
-=======
   orthographic size: 6.4453125
->>>>>>> origin/main
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2225,11 +2216,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8573912678766947569, guid: 9a4e93ed3dd002c4198fce208f59d613, type: 3}
       propertyPath: m_LocalPosition.x
-<<<<<<< HEAD
       value: 23.42
-=======
       value: 22.1
->>>>>>> origin/main
       objectReference: {fileID: 0}
     - target: {fileID: 8573912678766947569, guid: 9a4e93ed3dd002c4198fce208f59d613, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2329,7 +2317,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9a4e93ed3dd002c4198fce208f59d613, type: 3}
-<<<<<<< HEAD
 --- !u!1 &802377532
 GameObject:
   m_ObjectHideFlags: 0
@@ -2422,8 +2409,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -0.6, y: 0, z: -90}
-=======
->>>>>>> origin/main
 --- !u!1 &822516981
 GameObject:
   m_ObjectHideFlags: 0
@@ -2621,11 +2606,8 @@ TilemapRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-<<<<<<< HEAD
   - {fileID: 2100000, guid: 40c3513251640c148a4f818923f06b70, type: 2}
-=======
   - {fileID: 2100000, guid: 75e5cccabfee7d94a8f9de92b66d4e89, type: 2}
->>>>>>> origin/main
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -11213,7 +11195,6 @@ Transform:
   - {fileID: 211030627}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-<<<<<<< HEAD
 --- !u!1 &1012055789
 GameObject:
   m_ObjectHideFlags: 0
@@ -11367,8 +11348,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 5.519, y: -0.309, z: 0}
-=======
->>>>>>> origin/main
 --- !u!1 &1057931184
 GameObject:
   m_ObjectHideFlags: 0
@@ -11807,17 +11786,14 @@ MonoBehaviour:
   muzzleDistance: 0.6
   muzzleHeight: 0
   boundsTilemap: {fileID: 936010844}
-<<<<<<< HEAD
   scrap: 500
   scrapUI: {fileID: 1551344832}
   point_multiplier: 1
   perk_count: 0
   max_perk_count: 4
-=======
   scrap: 0
   scrapUI: {fileID: 1551344832}
   point_multiplier: 1
->>>>>>> origin/main
   prime_wpn_id: 0
   prime_wpn_mag_max: 8
   prime_wpn_mag: 8
@@ -11826,10 +11802,7 @@ MonoBehaviour:
   prime_wpn_damage: 5
   prime_wpn_reloadTime: 2
   wpn_damage_multiplier: 1
-<<<<<<< HEAD
   wpn_prime_upgraded: 0
-=======
->>>>>>> origin/main
   wpn1_id: 0
   wpn1_mag_max: 8
   wpn1_mag: 8
@@ -11837,10 +11810,7 @@ MonoBehaviour:
   wpn1_reserve: 32
   wpn1_damage: 4
   wp1_reloadTime: 0
-<<<<<<< HEAD
   wp1_upgraded: 0
-=======
->>>>>>> origin/main
   wpn2_id: 0
   wpn2_mag_max: 0
   wpn2_mag: 0
@@ -11848,10 +11818,7 @@ MonoBehaviour:
   wpn2_reserve: 0
   wpn2_damage: 0
   wp2_reloadTime: 0
-<<<<<<< HEAD
   wp2_upgraded: 0
-=======
->>>>>>> origin/main
   wpn3_id: 0
   wpn3_mag_max: 0
   wpn3_mag: 0
@@ -11859,7 +11826,6 @@ MonoBehaviour:
   wpn3_reserve: 0
   wpn3_damage: 0
   wp3_reloadTime: 0
-<<<<<<< HEAD
   wp3_upgraded: 0
   IsReloading: 0
   autoMode: 0
@@ -11870,9 +11836,7 @@ MonoBehaviour:
   scanInterval: 0.2
   base_max_weapons: 2
   mule_kick_max_weapons: 3
-=======
   IsReloading: 0
->>>>>>> origin/main
 --- !u!50 &1392688782
 Rigidbody2D:
   serializedVersion: 5
@@ -12200,7 +12164,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1581490245}
   m_CullTransparentMesh: 1
-<<<<<<< HEAD
 --- !u!1 &1614971260
 GameObject:
   m_ObjectHideFlags: 0
@@ -12361,8 +12324,6 @@ MonoBehaviour:
   wpn_buy_damage: 6
   wpn_buy_reloadTime: 2
   wpn_buy_upgraded: 0
-=======
->>>>>>> origin/main
 --- !u!1 &1622257749
 GameObject:
   m_ObjectHideFlags: 0
@@ -12869,9 +12830,6 @@ SceneRoots:
   - {fileID: 1094784211}
   - {fileID: 695476804}
   - {fileID: 849150987}
-<<<<<<< HEAD
   - {fileID: 1614971262}
   - {fileID: 1012055793}
   - {fileID: 802377534}
-=======
->>>>>>> origin/main
