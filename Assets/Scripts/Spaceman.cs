@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 using System;
+=======
+>>>>>>> origin/main
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,8 +25,13 @@ public class Spaceman: MonoBehaviour
     [SerializeField] private float knockbackDuration = 0.15f;
 
     [Header("Health & Survival")]
+<<<<<<< HEAD
     [SerializeField] public int maxLives = 25;
     [SerializeField] public int lives = 20;
+=======
+    [SerializeField] private int maxLives = 25;
+    [SerializeField] private int lives = 20;
+>>>>>>> origin/main
     public int Lives { get => lives; private set => lives = value; }
     public int MaxLives => maxLives;
 
@@ -66,11 +74,14 @@ public class Spaceman: MonoBehaviour
     public int Scrap => scrap;
     //weapon stats
     [Header("Primary Weapon Stats")]
+<<<<<<< HEAD
     //weapons order 
     [SerializeField] public ArrayList weapon_ids = new ArrayList();
     [SerializeField] public Dictionary<int, bool> WPNS_ORDER = new Dictionary<int, bool>();
     //wpn_id
     // Adding elements
+=======
+>>>>>>> origin/main
     [SerializeField] public int prime_wpn_id = 0;
     [SerializeField] public int prime_wpn_mag_max = 8;
     [SerializeField]public int prime_wpn_mag = 8;
@@ -88,7 +99,11 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int wpn1_reserve_max = 80;
     [SerializeField] public int wpn1_reserve = 32;
     [SerializeField] public int wpn1_damage = 4;
+<<<<<<< HEAD
     [SerializeField] public float wp1_reloadTime = 2.0f;
+=======
+    [SerializeField] private float wp1_reloadTime = 0f;
+>>>>>>> origin/main
     [SerializeField] public bool wp1_upgraded = false;
     //weapon 2 - no weapon 2 yet
     [SerializeField] public int wpn2_id = 0;
@@ -97,7 +112,11 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int wpn2_reserve_max = 0;
     [SerializeField] public int wpn2_reserve = 0;
     [SerializeField] public int wpn2_damage = 0;
+<<<<<<< HEAD
     [SerializeField] public float wp2_reloadTime = 0f;
+=======
+    [SerializeField] private float wp2_reloadTime = 0f;
+>>>>>>> origin/main
     [SerializeField] public bool wp2_upgraded = false;
     //weapon 3 - no weapon 3 yet
     [SerializeField] public int wpn3_id = 0;
@@ -106,7 +125,11 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int wpn3_reserve_max = 0;
     [SerializeField] public int wpn3_reserve = 0;
     [SerializeField] public int wpn3_damage = 0;
+<<<<<<< HEAD
     [SerializeField] public float wp3_reloadTime = 0f;
+=======
+    [SerializeField] private float wp3_reloadTime = 0f;
+>>>>>>> origin/main
     [SerializeField] public bool wp3_upgraded = false;
     //PACKED BLAST
     private bool _thunderblast = false;
@@ -129,10 +152,13 @@ public class Spaceman: MonoBehaviour
     [Tooltip("Steers away from the map edges so it doesn't get stuck in corners.")]
     [SerializeField] private float edgeMargin = 1.5f;
     [SerializeField] private float scanInterval = 0.2f;
+<<<<<<< HEAD
     [Header("Weapon Inventory Limits")]
     [SerializeField] public int base_max_weapons = 2;
     [SerializeField] public int mule_kick_max_weapons = 3;
     private bool hasMuleKick = false;
+=======
+>>>>>>> origin/main
 
     private GameObject[] autoEnemies = new GameObject[0];
     private Transform autoTarget;
@@ -146,11 +172,14 @@ public class Spaceman: MonoBehaviour
     private const string AppleTag = "Apple";
     private const string Lava_hazardTag = "Lava_Hazards";
 
+<<<<<<< HEAD
     // Store a reference to the PowerPop currently in range
     private power_pop_script currentPowerPop;
     //Check if the player is in range of a wall buy LOCATION
     private wallbuy_script currentWallBuy;
 
+=======
+>>>>>>> origin/main
     private void Awake()
     {
         Application.targetFrameRate = -1;
@@ -176,7 +205,10 @@ public class Spaceman: MonoBehaviour
             mapBounds = CamFollow.GetTilemapWorldBounds(boundsTilemap);
             hasBounds = true;
         }
+<<<<<<< HEAD
         InitializeWeapons();
+=======
+>>>>>>> origin/main
     }
 
     // --- MAP BOUNDS ---
@@ -502,6 +534,7 @@ public class Spaceman: MonoBehaviour
 
         Debug.Log($"Reload complete! Magazine: {prime_wpn_mag} | Reserve: {prime_wpn_reserve}");
     }
+<<<<<<< HEAD
     //INITIALIZE WEAPONS
     private void InitializeWeapons()
     {
@@ -666,6 +699,8 @@ public class Spaceman: MonoBehaviour
         Debug.Log($"Switched to weapon ID: {prime_wpn_id}, Slot: {slot + 1}");
     }
 
+=======
+>>>>>>> origin/main
 
 
 
@@ -757,6 +792,7 @@ public class Spaceman: MonoBehaviour
             rb.linearVelocity = Vector2.zero;
         }
     }
+<<<<<<< HEAD
     //SODAS
     // Called by the power-up when you walk into its radius
     public void RegisterPerks(power_pop_script powerPop)
@@ -907,6 +943,9 @@ public class Spaceman: MonoBehaviour
     {
         return hasMuleKick ? mule_kick_max_weapons : base_max_weapons;
     }
+=======
+
+>>>>>>> origin/main
     private void GameOver()
     {
         Debug.Log("Game Over! Restarting run...");

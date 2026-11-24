@@ -1,0 +1,15 @@
+*
+
+!.gitignore
+
+!Assets/
+!Packages/
+!ProjectSettings/
+
+Assets/*
+Packages/*
+ProjectSettings/*
+
+!Assets/**
+!Packages/**
+!ProjectSettings/**
