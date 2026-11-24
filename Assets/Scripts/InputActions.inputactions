@@ -35,7 +35,6 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
-<<<<<<< HEAD
                 },
                 {
                     "name": "Interact",
@@ -56,8 +55,6 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
-=======
->>>>>>> origin/main
                 }
             ],
             "bindings": [
@@ -192,7 +189,6 @@
                     "action": "Reload",
                     "isComposite": false,
                     "isPartOfComposite": false
-<<<<<<< HEAD
                 },
                 {
                     "name": "",
@@ -215,8 +211,6 @@
                     "action": "SwitchWeapon",
                     "isComposite": false,
                     "isPartOfComposite": false
-=======
->>>>>>> origin/main
                 }
             ]
         }

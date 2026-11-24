@@ -254,11 +254,8 @@ MonoBehaviour:
       m_LigatureGlyphID: 436
     - m_ComponentGlyphIDs: aa010000da010000ab010000
       m_LigatureGlyphID: 437
-<<<<<<< HEAD
-=======
     - m_ComponentGlyphIDs: 41000000ca000000cc010000
       m_LigatureGlyphID: 511
->>>>>>> origin/main
     m_GlyphPairAdjustmentRecords:
     - m_FirstAdjustmentRecord:
         m_GlyphIndex: 1
@@ -681,8 +678,6 @@ MonoBehaviour:
           m_YAdvance: 0
       m_FeatureLookupFlags: 0
     - m_FirstAdjustmentRecord:
-<<<<<<< HEAD
-=======
         m_GlyphIndex: 13
         m_GlyphValueRecord:
           m_XPlacement: 0
@@ -953,7 +948,6 @@ MonoBehaviour:
           m_YAdvance: 0
       m_FeatureLookupFlags: 0
     - m_FirstAdjustmentRecord:
->>>>>>> origin/main
         m_GlyphIndex: 14
         m_GlyphValueRecord:
           m_XPlacement: 0
@@ -1059,8 +1053,6 @@ MonoBehaviour:
           m_YAdvance: 0
       m_FeatureLookupFlags: 0
     - m_FirstAdjustmentRecord:
-<<<<<<< HEAD
-=======
         m_GlyphIndex: 20
         m_GlyphValueRecord:
           m_XPlacement: 0
@@ -1361,7 +1353,6 @@ MonoBehaviour:
           m_YAdvance: 0
       m_FeatureLookupFlags: 0
     - m_FirstAdjustmentRecord:
->>>>>>> origin/main
         m_GlyphIndex: 40
         m_GlyphValueRecord:
           m_XPlacement: 0
@@ -1587,8 +1578,6 @@ MonoBehaviour:
           m_YAdvance: 0
       m_FeatureLookupFlags: 0
     - m_FirstAdjustmentRecord:
-<<<<<<< HEAD
-=======
         m_GlyphIndex: 43
         m_GlyphValueRecord:
           m_XPlacement: 0
@@ -2414,7 +2403,6 @@ MonoBehaviour:
           m_YAdvance: 0
       m_FeatureLookupFlags: 0
     - m_FirstAdjustmentRecord:
->>>>>>> origin/main
         m_GlyphIndex: 58
         m_GlyphValueRecord:
           m_XPlacement: 0
@@ -3210,8 +3198,6 @@ MonoBehaviour:
           m_YAdvance: 0
       m_FeatureLookupFlags: 0
     - m_FirstAdjustmentRecord:
-<<<<<<< HEAD
-=======
         m_GlyphIndex: 65
         m_GlyphValueRecord:
           m_XPlacement: 0
@@ -3437,7 +3423,6 @@ MonoBehaviour:
           m_YAdvance: 0
       m_FeatureLookupFlags: 0
     - m_FirstAdjustmentRecord:
->>>>>>> origin/main
         m_GlyphIndex: 71
         m_GlyphValueRecord:
           m_XPlacement: 0
@@ -6888,8 +6873,6 @@ MonoBehaviour:
           m_YAdvance: 0
       m_FeatureLookupFlags: 0
     - m_FirstAdjustmentRecord:
-<<<<<<< HEAD
-=======
         m_GlyphIndex: 119
         m_GlyphValueRecord:
           m_XPlacement: 0
@@ -7610,7 +7593,6 @@ MonoBehaviour:
           m_YAdvance: 0
       m_FeatureLookupFlags: 0
     - m_FirstAdjustmentRecord:
->>>>>>> origin/main
         m_GlyphIndex: 419
         m_GlyphValueRecord:
           m_XPlacement: 0
@@ -9125,8 +9107,6 @@ MonoBehaviour:
           m_XAdvance: 0
           m_YAdvance: 0
       m_FeatureLookupFlags: 0
-<<<<<<< HEAD
-=======
     - m_FirstAdjustmentRecord:
         m_GlyphIndex: 102
         m_GlyphValueRecord:
@@ -11452,7 +11432,6 @@ MonoBehaviour:
           m_XAdvance: 0
           m_YAdvance: 0
       m_FeatureLookupFlags: 0
->>>>>>> origin/main
     m_MarkToBaseAdjustmentRecords:
     - m_BaseGlyphID: 1
       m_BaseGlyphAnchorPoint:
@@ -11574,8 +11553,6 @@ MonoBehaviour:
       m_MarkPositionAdjustment:
         m_XPositionAdjustment: 11.97
         m_YPositionAdjustment: 0
-<<<<<<< HEAD
-=======
     - m_BaseGlyphID: 13
       m_BaseGlyphAnchorPoint:
         m_XCoordinate: 27.18
@@ -11696,7 +11673,6 @@ MonoBehaviour:
       m_MarkPositionAdjustment:
         m_XPositionAdjustment: 11.97
         m_YPositionAdjustment: 0
->>>>>>> origin/main
     - m_BaseGlyphID: 14
       m_BaseGlyphAnchorPoint:
         m_XCoordinate: 27.000002
@@ -11817,8 +11793,6 @@ MonoBehaviour:
       m_MarkPositionAdjustment:
         m_XPositionAdjustment: 11.97
         m_YPositionAdjustment: 0
-<<<<<<< HEAD
-=======
     - m_BaseGlyphID: 20
       m_BaseGlyphAnchorPoint:
         m_XCoordinate: 22.410002
@@ -11939,7 +11913,6 @@ MonoBehaviour:
       m_MarkPositionAdjustment:
         m_XPositionAdjustment: 11.97
         m_YPositionAdjustment: 0
->>>>>>> origin/main
     - m_BaseGlyphID: 24
       m_BaseGlyphAnchorPoint:
         m_XCoordinate: 26.820002
@@ -12060,8 +12033,6 @@ MonoBehaviour:
       m_MarkPositionAdjustment:
         m_XPositionAdjustment: 11.97
         m_YPositionAdjustment: 0
-<<<<<<< HEAD
-=======
     - m_BaseGlyphID: 35
       m_BaseGlyphAnchorPoint:
         m_XCoordinate: 27.18
@@ -12182,7 +12153,6 @@ MonoBehaviour:
       m_MarkPositionAdjustment:
         m_XPositionAdjustment: 11.97
         m_YPositionAdjustment: 0
->>>>>>> origin/main
     - m_BaseGlyphID: 40
       m_BaseGlyphAnchorPoint:
         m_XCoordinate: 27.18
@@ -12303,8 +12273,6 @@ MonoBehaviour:
       m_MarkPositionAdjustment:
         m_XPositionAdjustment: 11.97
         m_YPositionAdjustment: 0
-<<<<<<< HEAD
-=======
     - m_BaseGlyphID: 43
       m_BaseGlyphAnchorPoint:
         m_XCoordinate: 19.17
@@ -12545,7 +12513,6 @@ MonoBehaviour:
       m_MarkPositionAdjustment:
         m_XPositionAdjustment: 11.97
         m_YPositionAdjustment: 0
->>>>>>> origin/main
     - m_BaseGlyphID: 58
       m_BaseGlyphAnchorPoint:
         m_XCoordinate: 27.18
@@ -12786,8 +12753,6 @@ MonoBehaviour:
       m_MarkPositionAdjustment:
         m_XPositionAdjustment: 11.97
         m_YPositionAdjustment: 0
-<<<<<<< HEAD
-=======
     - m_BaseGlyphID: 65
       m_BaseGlyphAnchorPoint:
         m_XCoordinate: 27.18
@@ -12908,7 +12873,6 @@ MonoBehaviour:
       m_MarkPositionAdjustment:
         m_XPositionAdjustment: 11.97
         m_YPositionAdjustment: 0
->>>>>>> origin/main
     - m_BaseGlyphID: 71
       m_BaseGlyphAnchorPoint:
         m_XCoordinate: 27.18
@@ -13509,8 +13473,6 @@ MonoBehaviour:
       m_MarkPositionAdjustment:
         m_XPositionAdjustment: 11.97
         m_YPositionAdjustment: 0
-<<<<<<< HEAD
-=======
     - m_BaseGlyphID: 119
       m_BaseGlyphAnchorPoint:
         m_XCoordinate: 27.18
@@ -13991,7 +13953,6 @@ MonoBehaviour:
       m_MarkPositionAdjustment:
         m_XPositionAdjustment: 11.97
         m_YPositionAdjustment: 0
->>>>>>> origin/main
     m_MarkToMarkAdjustmentRecords: []
   m_ShouldReimportFontFeatures: 0
   m_FallbackFontAssetTable: []
