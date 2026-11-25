@@ -1,3 +1,5 @@
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,8 +23,8 @@ public class Spaceman: MonoBehaviour
     [SerializeField] private float knockbackDuration = 0.15f;
 
     [Header("Health & Survival")]
-    [SerializeField] private int maxLives = 25;
-    [SerializeField] private int lives = 20;
+    [SerializeField] public int maxLives = 25;
+    [SerializeField] public int lives = 20;
     public int Lives { get => lives; private set => lives = value; }
     public int MaxLives => maxLives;
 
@@ -65,6 +67,11 @@ public class Spaceman: MonoBehaviour
     public int Scrap => scrap;
     //weapon stats
     [Header("Primary Weapon Stats")]
+    //weapons order 
+    [SerializeField] public ArrayList weapon_ids = new ArrayList();
+    [SerializeField] public Dictionary<int, bool> WPNS_ORDER = new Dictionary<int, bool>();
+    //wpn_id
+    // Adding elements
     [SerializeField] public int prime_wpn_id = 0;
     [SerializeField] public int prime_wpn_mag_max = 8;
     [SerializeField]public int prime_wpn_mag = 8;
@@ -82,7 +89,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int wpn1_reserve_max = 80;
     [SerializeField] public int wpn1_reserve = 32;
     [SerializeField] public int wpn1_damage = 4;
-    [SerializeField] private float wp1_reloadTime = 0f;
+    [SerializeField] public float wp1_reloadTime = 2.0f;
     [SerializeField] public bool wp1_upgraded = false;
     //weapon 2 - no weapon 2 yet
     [SerializeField] public int wpn2_id = 0;
@@ -91,7 +98,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int wpn2_reserve_max = 0;
     [SerializeField] public int wpn2_reserve = 0;
     [SerializeField] public int wpn2_damage = 0;
-    [SerializeField] private float wp2_reloadTime = 0f;
+    [SerializeField] public float wp2_reloadTime = 0f;
     [SerializeField] public bool wp2_upgraded = false;
     //weapon 3 - no weapon 3 yet
     [SerializeField] public int wpn3_id = 0;
@@ -100,7 +107,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int wpn3_reserve_max = 0;
     [SerializeField] public int wpn3_reserve = 0;
     [SerializeField] public int wpn3_damage = 0;
-    [SerializeField] private float wp3_reloadTime = 0f;
+    [SerializeField] public float wp3_reloadTime = 0f;
     [SerializeField] public bool wp3_upgraded = false;
     //PACKED BLAST
     private bool _thunderblast = false;
@@ -123,6 +130,10 @@ public class Spaceman: MonoBehaviour
     [Tooltip("Steers away from the map edges so it doesn't get stuck in corners.")]
     [SerializeField] private float edgeMargin = 1.5f;
     [SerializeField] private float scanInterval = 0.2f;
+    [Header("Weapon Inventory Limits")]
+    [SerializeField] public int base_max_weapons = 2;
+    [SerializeField] public int mule_kick_max_weapons = 3;
+    private bool hasMuleKick = false;
 
     private GameObject[] autoEnemies = new GameObject[0];
     private Transform autoTarget;
@@ -135,7 +146,10 @@ public class Spaceman: MonoBehaviour
     private const string EnemyTag = "Enemy";
     private const string AppleTag = "Apple";
     private const string Lava_hazardTag = "Lava_Hazards";
-
+    // Store a reference to the PowerPop currently in range
+    private power_pop_script currentPowerPop;
+    //Check if the player is in range of a wall buy LOCATION
+    private wallbuy_script currentWallBuy;
     private void Awake()
     {
         Application.targetFrameRate = -1;
@@ -161,6 +175,7 @@ public class Spaceman: MonoBehaviour
             mapBounds = CamFollow.GetTilemapWorldBounds(boundsTilemap);
             hasBounds = true;
         }
+        InitializeWeapons();
     }
 
     // --- MAP BOUNDS ---
@@ -486,8 +501,169 @@ public class Spaceman: MonoBehaviour
 
         Debug.Log($"Reload complete! Magazine: {prime_wpn_mag} | Reserve: {prime_wpn_reserve}");
     }
+    //INITIALIZE WEAPONS
+    private void InitializeWeapons()
+    {
+            // Initialize weapon slots
+            weapon_ids = new ArrayList()
+        {
+            0,  // Primary weapon
+            -1, // Secondary weapon empty
+            -1  // Third weapon empty
+        };
 
+            // Initialize weapon upgrade statuses
+            WPNS_ORDER = new Dictionary<int, bool>()
+        {
+            { 0, false } // Pistol starts unupgraded
+        };
+    }
+    public void OnSwitchWeapon(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            CycleWeaponSlot();
+        }
+    }
 
+    private void CycleWeaponSlot()
+    {
+        int maxWeapons = GetMaxWeapons();
+
+        if (weapon_ids.Count < maxWeapons)
+            return;
+
+        int currentSlot = -1;
+
+        // Find currently equipped weapon.
+        for (int i = 0; i < maxWeapons; i++)
+        {
+            if ((int)weapon_ids[i] == prime_wpn_id)
+            {
+                currentSlot = i;
+                break;
+            }
+        }
+
+        if (currentSlot == -1)
+        {
+            Debug.LogWarning("Current weapon not found in inventory!");
+            return;
+        }
+
+        // Find next owned weapon.
+        for (int i = 1; i <= maxWeapons; i++)
+        {
+            int nextSlot = (currentSlot + i) % maxWeapons;
+
+            int nextWeapon = (int)weapon_ids[nextSlot];
+
+            if (nextWeapon != -1)
+            {
+                EquipWeapon(nextWeapon);
+                return;
+            }
+        }
+
+        Debug.Log("No other weapons available!");
+    }
+
+    //save weapon
+
+    private void SaveCurrentWeapon()
+    {
+        for (int i = 0; i < GetMaxWeapons(); i++)
+        {
+            if ((int)weapon_ids[i] != prime_wpn_id)
+                continue;
+
+            switch (i)
+            {
+                case 0:
+                    wpn1_mag = prime_wpn_mag;
+                    wpn1_reserve = prime_wpn_reserve;
+                    break;
+
+                case 1:
+                    wpn2_mag = prime_wpn_mag;
+                    wpn2_reserve = prime_wpn_reserve;
+                    break;
+
+                case 2:
+                    wpn3_mag = prime_wpn_mag;
+                    wpn3_reserve = prime_wpn_reserve;
+                    break;
+            }
+
+            return;
+        }
+    }
+
+    public void EquipWeapon(int weaponId)
+    {
+        if (IsReloading)
+        {
+            Debug.Log("Cannot switch weapons while reloading!");
+            return;
+        }
+
+        int slot = -1;
+
+        for (int i = 0; i < GetMaxWeapons(); i++)
+        {
+            if ((int)weapon_ids[i] == weaponId)
+            {
+                slot = i;
+                break;
+            }
+        }
+
+        if (slot == -1)
+        {
+            Debug.LogWarning("Weapon not found!");
+            return;
+        }
+
+        // Save old weapon ammunition.
+        SaveCurrentWeapon();
+
+        prime_wpn_id = weaponId;
+
+        switch (slot)
+        {
+            case 0:
+                prime_wpn_mag_max = wpn1_mag_max;
+                prime_wpn_mag = wpn1_mag;
+                prime_wpn_reserve_max = wpn1_reserve_max;
+                prime_wpn_reserve = wpn1_reserve;
+                prime_wpn_damage = wpn1_damage;
+                prime_wpn_reloadTime = wp1_reloadTime;
+                wpn_prime_upgraded = wp1_upgraded;
+                break;
+
+            case 1:
+                prime_wpn_mag_max = wpn2_mag_max;
+                prime_wpn_mag = wpn2_mag;
+                prime_wpn_reserve_max = wpn2_reserve_max;
+                prime_wpn_reserve = wpn2_reserve;
+                prime_wpn_damage = wpn2_damage;
+                prime_wpn_reloadTime = wp2_reloadTime;
+                wpn_prime_upgraded = wp2_upgraded;
+                break;
+
+            case 2:
+                prime_wpn_mag_max = wpn3_mag_max;
+                prime_wpn_mag = wpn3_mag;
+                prime_wpn_reserve_max = wpn3_reserve_max;
+                prime_wpn_reserve = wpn3_reserve;
+                prime_wpn_damage = wpn3_damage;
+                prime_wpn_reloadTime = wp3_reloadTime;
+                wpn_prime_upgraded = wp3_upgraded;
+                break;
+        }
+
+        Debug.Log($"Switched to weapon ID: {prime_wpn_id}, Slot: {slot + 1}");
+    }
 
     // --- DAMAGE & TRIGGER INTERACTIONS ---
     private void OnTriggerEnter2D(Collider2D collision)
@@ -577,7 +753,156 @@ public class Spaceman: MonoBehaviour
             rb.linearVelocity = Vector2.zero;
         }
     }
+    //SODAS
+    // Called by the power-up when you walk into its radius
+    public void RegisterPerks(power_pop_script powerPop)
+    {
+        currentPowerPop = powerPop;
+    }
 
+    // Called by the power-up when you walk away
+    public void UnregisterPerks(power_pop_script powerPop)
+    {
+        if (currentPowerPop == powerPop)
+        {
+            currentPowerPop = null;
+        }
+    }
+
+    public void RegisterWallBuy(wallbuy_script wallBuy)
+    {
+        currentWallBuy = wallBuy;
+    }
+
+    public void UnregisterWallBuy(wallbuy_script wallBuy)
+    {
+        if (currentWallBuy == wallBuy)
+        {
+            currentWallBuy = null;
+        }
+    }
+
+    // Called automatically when you hit your Interact input
+    public void OnInteract(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            if (currentPowerPop != null)
+            {
+                TryBuyPerk(currentPowerPop, "Power Pop", currentPowerPop.powerPopCost); // Example perk name and cost
+            }
+            else if (currentWallBuy != null)
+            {
+                currentWallBuy.Interact();
+            }
+            else
+            {
+                Debug.Log("Nothing to interact with.");
+            }
+        }
+    }
+    // --- PERK PURCHASE SYSTEM ---
+    public void TryBuyPerk(power_pop_script perkMachine, string perkName, int cost)
+    {
+        // 1. Check if the player already owns this specific perk
+        if (PERKS_ORDER.ContainsValue(perkName))
+        {
+            Debug.Log($"You already own {perkName}!");
+            return;
+        }
+
+        // 2. Check max perk limit (4-perk limit)
+        if (perk_count >= max_perk_count)
+        {
+            Debug.Log("Maximum perk limit reached (4/4)!");
+            return;
+        }
+
+        // 3. Check if player has enough scrap
+        if (scrap < cost)
+        {
+            Debug.Log($"Not enough scrap! Need {cost}, but you only have {scrap}.");
+            return;
+        }
+
+        // 4. Successful purchase! Deduct scrap and update UI
+        scrap -= cost;
+        if (scrapUI != null) scrapUI.UpdateScrap(scrap);
+
+        // 5. Register the perk in tracking structures
+        PERKS_ORDER.Add(perk_count, perkName);
+        perk_count++;
+
+        // 6. Tell the machine to apply its unique perk effect to the player
+        perkMachine.ApplyEffect(this);
+
+        Debug.Log($"Successfully purchased {perkName}! Total Perks: {perk_count} | Scrap left: {scrap}");
+    }
+    //try to buy a wall weapon
+    // --- WALL-BUY PURCHASE SYSTEM (2-Weapon Max) ---
+
+    public void TryBuyWallWeapon(wallbuy_script wallBuy, int cost, int weaponId)
+    {
+        int maxWeapons = GetMaxWeapons();
+
+        // Check whether player already owns this weapon.
+        bool alreadyOwns = false;
+
+        Debug.Log("========== WALL BUY DEBUG ==========");
+        Debug.Log($"Max Weapons: {maxWeapons}");
+        Debug.Log($"Inventory Count: {weapon_ids.Count}");
+
+        for (int i = 0; i < maxWeapons; i++)
+        {
+            if (i < weapon_ids.Count && (int)weapon_ids[i] == weaponId)
+            {
+                alreadyOwns = true;
+                break;
+            }
+        }
+
+        // Ammo refills cost half price.
+        int actualCost = alreadyOwns ? cost / 2 : cost;
+
+        if (scrap < actualCost)
+        {
+            Debug.Log($"Not enough scrap! Need {actualCost}, but you have {scrap}.");
+            return;
+        }
+
+        // Purchase.
+        scrap -= actualCost;
+
+        if (scrapUI != null)
+            scrapUI.UpdateScrap(scrap);
+        Debug.Log("STEP 1: About to call ApplyWeapon");
+
+        wallBuy.ApplyWeapon(this);
+
+        Debug.Log("STEP 2: ApplyWeapon finished");
+
+        Debug.Log($"Wall buy successful! Scrap left: {scrap}");
+    }
+
+    // Call this from Mule Kick's ApplyEffect when purchased
+    public void EnableMuleKick()
+    {
+        hasMuleKick = true;
+
+        // Expand your weapon list capacity to hold a 3rd weapon slot if needed
+        while (weapon_ids.Count < mule_kick_max_weapons)
+        {
+            weapon_ids.Add(-1);
+        }
+
+        Debug.Log("Mule Kick acquired! Weapon limit increased to 3.");
+    }
+
+    // Helper property to check current dynamic weapon limit
+    public int GetMaxWeapons()
+    {
+        return hasMuleKick ? mule_kick_max_weapons : base_max_weapons;
+    }
     private void GameOver()
     {
         Debug.Log("Game Over! Restarting run...");

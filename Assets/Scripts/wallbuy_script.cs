@@ -1,0 +1,186 @@
+using UnityEngine;
+
+public class wallbuy_script : MonoBehaviour
+{
+    [Header("Wall Buy Settings")]
+    [SerializeField] private int wall_buy_cost = 500;
+    [SerializeField] private string weaponName = "DMR-141";
+
+    [Header("Weapon Stats")]
+    [SerializeField] public int wpn_buy_id = 1; // 0 is pistol, 1+ for wall weapons
+    [SerializeField] public int wpn_buy_mag_max = 8;
+    [SerializeField] public int wpn_buy_reserve_max = 96;
+    [SerializeField] public int wpn_buy_damage = 6;
+    [SerializeField] private float wpn_buy_reloadTime = 2.0f;
+    [SerializeField] public bool wpn_buy_upgraded = false;
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            Spaceman spaceman = collision.GetComponent<Spaceman>();
+            if (spaceman != null)
+            {
+                spaceman.RegisterWallBuy(this);
+                Debug.Log($"In range of {weaponName}! Press interact to buy for {wall_buy_cost} Scrap.");
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            Spaceman spaceman = collision.GetComponent<Spaceman>();
+            if (spaceman != null)
+            {
+                spaceman.UnregisterWallBuy(this);
+                Debug.Log($"Left {weaponName} range.");
+            }
+        }
+    }
+
+    public void Interact()
+    {
+        Spaceman spaceman = FindAnyObjectByType<Spaceman>();
+        if (spaceman != null)
+        {
+            spaceman.TryBuyWallWeapon(this, wall_buy_cost, wpn_buy_id);
+        }
+    }
+    // Applied to the player when the purchase succeeds
+
+    public void ApplyWeapon(Spaceman spaceman)
+    {
+        Debug.Log($"Buying Weapon ID: {wpn_buy_id}");
+        Debug.Log($"Weapon 1: {spaceman.weapon_ids[0]}");
+        Debug.Log($"Weapon 2: {spaceman.weapon_ids[1]}");
+        Debug.Log($"Maximum Weapons: {spaceman.GetMaxWeapons()}");
+        int maxWeapons = spaceman.GetMaxWeapons();
+
+        // 1. Check if player already owns this weapon.
+        int existingSlot = -1;
+
+        for (int i = 0; i < maxWeapons; i++)
+        {
+            if (i < spaceman.weapon_ids.Count &&
+                (int)spaceman.weapon_ids[i] == wpn_buy_id)
+            {
+                existingSlot = i;
+                break;
+            }
+        }
+
+        // 2. Already owned: refill ammunition.
+        if (existingSlot != -1)
+        {
+            if (existingSlot == 0)
+            {
+                spaceman.wpn1_mag = wpn_buy_mag_max;
+                spaceman.wpn1_reserve = wpn_buy_reserve_max;
+            }
+            else if (existingSlot == 1)
+            {
+                spaceman.wpn2_mag = wpn_buy_mag_max;
+                spaceman.wpn2_reserve = wpn_buy_reserve_max;
+            }
+            else if (existingSlot == 2)
+            {
+                spaceman.wpn3_mag = wpn_buy_mag_max;
+                spaceman.wpn3_reserve = wpn_buy_reserve_max;
+            }
+
+            if (spaceman.prime_wpn_id == wpn_buy_id)
+            {
+                spaceman.prime_wpn_mag = wpn_buy_mag_max;
+                spaceman.prime_wpn_reserve = wpn_buy_reserve_max;
+            }
+
+            Debug.Log($"Ammo refilled for {weaponName}!");
+            return;
+        }
+
+        // 3. Make sure the inventory list has enough entries.
+        while (spaceman.weapon_ids.Count < maxWeapons)
+        {
+            spaceman.weapon_ids.Add(-1);
+        }
+
+        // 4. Find an empty slot first.
+        int targetSlot = -1;
+
+        for (int i = 0; i < maxWeapons; i++)
+        {
+            if ((int)spaceman.weapon_ids[i] == -1)
+            {
+                targetSlot = i;
+                break;
+            }
+        }
+
+        // 5. All slots full: replace a weapon that isn't equipped.
+        if (targetSlot == -1)
+        {
+            for (int i = 0; i < maxWeapons; i++)
+            {
+                if ((int)spaceman.weapon_ids[i] != spaceman.prime_wpn_id)
+                {
+                    targetSlot = i;
+                    break;
+                }
+            }
+        }
+
+        if (targetSlot == -1)
+        {
+            Debug.LogWarning("Could not find a weapon slot to replace!");
+            return;
+        }
+
+        // 6. Assign the new weapon ID.
+        spaceman.weapon_ids[targetSlot] = wpn_buy_id;
+
+        // 7. Apply weapon stats to the selected slot.
+        switch (targetSlot)
+        {
+            case 0:
+                spaceman.wpn1_id = wpn_buy_id;
+                spaceman.wpn1_mag_max = wpn_buy_mag_max;
+                spaceman.wpn1_mag = wpn_buy_mag_max;
+                spaceman.wpn1_reserve_max = wpn_buy_reserve_max;
+                spaceman.wpn1_reserve = wpn_buy_reserve_max;
+                spaceman.wpn1_damage = wpn_buy_damage;
+                spaceman.wp1_reloadTime = wpn_buy_reloadTime;
+                spaceman.wp1_upgraded = wpn_buy_upgraded;
+                break;
+
+            case 1:
+                spaceman.wpn2_id = wpn_buy_id;
+                spaceman.wpn2_mag_max = wpn_buy_mag_max;
+                spaceman.wpn2_mag = wpn_buy_mag_max;
+                spaceman.wpn2_reserve_max = wpn_buy_reserve_max;
+                spaceman.wpn2_reserve = wpn_buy_reserve_max;
+                spaceman.wpn2_damage = wpn_buy_damage;
+                spaceman.wp2_reloadTime = wpn_buy_reloadTime;
+                spaceman.wp2_upgraded = wpn_buy_upgraded;
+                break;
+
+            case 2:
+                spaceman.wpn3_id = wpn_buy_id;
+                spaceman.wpn3_mag_max = wpn_buy_mag_max;
+                spaceman.wpn3_mag = wpn_buy_mag_max;
+                spaceman.wpn3_reserve_max = wpn_buy_reserve_max;
+                spaceman.wpn3_reserve = wpn_buy_reserve_max;
+                spaceman.wpn3_damage = wpn_buy_damage;
+                spaceman.wp3_reloadTime = wpn_buy_reloadTime;
+                spaceman.wp3_upgraded = wpn_buy_upgraded;
+                break;
+        }
+
+        Debug.Log($"Purchased {weaponName} in slot {targetSlot + 1}!");
+        Debug.Log($"Inventory: {string.Join(", ", spaceman.weapon_ids.ToArray())}");
+        Debug.Log($"Active weapon: {spaceman.prime_wpn_id}");
+    }
+
+
+}
