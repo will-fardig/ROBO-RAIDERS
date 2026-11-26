@@ -38,13 +38,13 @@ public class WaveManager : MonoBehaviour
 
     private void OnEnable()
     {
-        RunnerChase.Died += OnEnemyDied;
+        EnemyHealth.Died += OnEnemyDied;
         if (director != null) director.EnemySpawned += OnEnemySpawned;
     }
 
     private void OnDisable()
     {
-        RunnerChase.Died -= OnEnemyDied;
+        EnemyHealth.Died -= OnEnemyDied;
         if (director != null) director.EnemySpawned -= OnEnemySpawned;
     }
 

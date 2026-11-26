@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5459421020855789659}
   - component: {fileID: 2972748287142276472}
   - component: {fileID: 5206667547166892015}
+  - component: {fileID: -260455965545064450}
   m_Layer: 0
   m_Name: runner_0
   m_TagString: Enemy
@@ -201,7 +202,20 @@ MonoBehaviour:
   detectionRange: 100
   pauseAfterHit: 0.6
   spriteFacesRight: 1
-  RunnerHealth: 10
+--- !u!114 &-260455965545064450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2181836984580440452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 284a261049034f04f8dcb41e3b091021, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  maxHealth: 10
+  currentHealth: 0
   flashColor: {r: 1, g: 0.3, b: 0.3, a: 1}
   flashDuration: 0.1
   knockbackSpeed: 6
