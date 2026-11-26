@@ -40,6 +40,10 @@ PrefabInstance:
       propertyPath: moveSpeed
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 5206667547166892015, guid: 9a4e93ed3dd002c4198fce208f59d613, type: 3}
+      propertyPath: flowFieldId
+      value: big
+      objectReference: {fileID: 0}
     - target: {fileID: 8573912678766947569, guid: 9a4e93ed3dd002c4198fce208f59d613, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.2552

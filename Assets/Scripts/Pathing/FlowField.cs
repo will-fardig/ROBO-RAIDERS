@@ -3,36 +3,56 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 // Grid of the map + "which way to the player" for every cell.
-// Rebuilt a few times a second; every runner just looks up its own cell.
+// You can have several (e.g. "default" for normal enemies, "big" for large ones);
+// each enemy reads the one named in its movement script.
 public class FlowField : MonoBehaviour
 {
-    public static FlowField Instance { get; private set; }
+    private static readonly Dictionary<string, FlowField> fields = new Dictionary<string, FlowField>();
+
+    // The normal field (old code that used Instance keeps working)
+    public static FlowField Instance => Get("default");
+
+    // Field by name, falling back to "default" if that name doesn't exist
+    public static FlowField Get(string id)
+    {
+        if (!string.IsNullOrEmpty(id) && fields.TryGetValue(id, out FlowField f) && f != null) return f;
+        return fields.TryGetValue("default", out FlowField d) ? d : null;
+    }
+
+    [Header("Identity")]
+    [SerializeField] private string fieldId = "default";
 
     [Header("Tilemaps")]
     [SerializeField] private Tilemap floorTilemap;   // Terrain
 
+    [Header("Grid")]
+    [Tooltip("1 = one cell per tile. 2 = half-tile cells (needed for big enemies to line up in doorways).")]
+    [Range(1, 4)]
+    [SerializeField] private int cellsPerTile = 1;
+
     [Header("Blockers")]
     [SerializeField] private LayerMask blockerLayers;            // Walls
-    [Range(0.1f, 1f)]
+    [Tooltip("Size (world units) of the box that has to be wall-free for a cell to be walkable. Roughly the enemy's body width.")]
+    [Range(0.1f, 4f)]
     [SerializeField] private float blockCheckSize = 0.8f;
 
     [Header("Target")]
-    [SerializeField] private Transform target;                   // auto-finds the Spaceman
+    [SerializeField] private Transform target;
     [SerializeField] private float updateInterval = 0.25f;
 
     [Header("Debug")]
     [SerializeField] private bool drawGrid = true;
     [SerializeField] private bool drawArrows = true;
 
-    private BoundsInt bounds;
+    private Vector2 origin;     // world position of the grid's bottom-left corner
+    private float cellSize;     // world units per cell
     private int width, height;
     private bool[] walkable;
-    private int[] dist;        // steps to the target, -1 = can't reach
-    private int[] next;        // index of the neighbour cell to walk to, -1 = none
+    private int[] dist;
+    private int[] next;
     private readonly Queue<int> queue = new Queue<int>();
     private float timer;
 
-    // 8 directions: right, left, up, down, then diagonals
     private static readonly int[] DX = { 1, -1, 0, 0, 1, 1, -1, -1 };
     private static readonly int[] DY = { 0, 0, 1, -1, 1, -1, 1, -1 };
 
@@ -40,8 +60,13 @@ public class FlowField : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        fields[fieldId] = this;
         BuildGrid();
+    }
+
+    private void OnDestroy()
+    {
+        if (fields.TryGetValue(fieldId, out FlowField f) && f == this) fields.Remove(fieldId);
     }
 
     private void Start()
@@ -68,28 +93,34 @@ public class FlowField : MonoBehaviour
         if (floorTilemap == null) { Debug.LogError("FlowField needs the floor tilemap!", this); return; }
 
         floorTilemap.CompressBounds();
-        bounds = floorTilemap.cellBounds;
-        width = bounds.size.x;
-        height = bounds.size.y;
+        BoundsInt b = floorTilemap.cellBounds;
+        Vector2 minW = floorTilemap.CellToWorld(b.min);
+        Vector2 maxW = floorTilemap.CellToWorld(b.max);
+
+        cellSize = floorTilemap.layoutGrid.cellSize.x / cellsPerTile;
+        origin = minW;
+        width = Mathf.CeilToInt((maxW.x - minW.x) / cellSize);
+        height = Mathf.CeilToInt((maxW.y - minW.y) / cellSize);
+
         walkable = new bool[width * height];
         dist = new int[width * height];
         next = new int[width * height];
 
         Physics2D.SyncTransforms();
-        Vector2 box = floorTilemap.layoutGrid.cellSize * blockCheckSize;
+        Vector2 box = Vector2.one * blockCheckSize;
         int open = 0;
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                Vector3Int cell = new Vector3Int(bounds.xMin + x, bounds.yMin + y, 0);
-                bool floor = floorTilemap.HasTile(cell);
-                bool blocked = floor && Physics2D.OverlapBox(floorTilemap.GetCellCenterWorld(cell), box, 0f, blockerLayers) != null;
+                Vector2 center = LocalToWorld(x, y);
+                bool floor = floorTilemap.HasTile(floorTilemap.WorldToCell(center));
+                bool blocked = floor && Physics2D.OverlapBox(center, box, 0f, blockerLayers) != null;
                 walkable[x + y * width] = floor && !blocked;
                 if (walkable[x + y * width]) open++;
             }
         }
-        Debug.Log($"[FlowField] Grid {width}x{height}, {open} walkable cells");
+        Debug.Log($"[FlowField:{fieldId}] Grid {width}x{height} ({cellSize:0.##}u cells), {open} walkable");
     }
 
     // ---------- Field (directions) ----------
@@ -99,7 +130,6 @@ public class FlowField : MonoBehaviour
         for (int i = 0; i < dist.Length; i++) { dist[i] = -1; next[i] = -1; }
         if (!WorldToLocal(targetWorld, out int tx, out int ty)) return;
 
-        // Flood outward from the player: each cell learns how many steps away it is
         int start = tx + ty * width;
         dist[start] = 0;
         queue.Clear();
@@ -119,13 +149,12 @@ public class FlowField : MonoBehaviour
             }
         }
 
-        // Each cell points at its neighbour that's closest to the player
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
                 int c = x + y * width;
-                if (dist[c] <= 0) continue;   // unreachable, or the player's own cell
+                if (dist[c] <= 0) continue;
                 int best = -1, bestDist = dist[c];
                 for (int d = 0; d < 8; d++)
                 {
@@ -139,7 +168,6 @@ public class FlowField : MonoBehaviour
         }
     }
 
-    // Can you walk from (x,y) to the neighbour (nx,ny)? Diagonals can't cut wall corners.
     private bool CanStep(int x, int y, int nx, int ny, int d)
     {
         if (!IsWalkable(nx, ny)) return false;
@@ -147,8 +175,7 @@ public class FlowField : MonoBehaviour
         return true;
     }
 
-    // ---------- What runners call ----------
-    // Direction to walk from this world position. Zero = no route (or already at the player).
+    // ---------- What enemies call ----------
     public Vector2 GetDirection(Vector2 worldPos)
     {
         if (!IsBuilt || !WorldToLocal(worldPos, out int x, out int y)) return Vector2.zero;
@@ -161,15 +188,14 @@ public class FlowField : MonoBehaviour
     // ---------- Helpers ----------
     public bool WorldToLocal(Vector2 world, out int x, out int y)
     {
-        Vector3Int cell = floorTilemap.WorldToCell(world);
-        x = cell.x - bounds.xMin;
-        y = cell.y - bounds.yMin;
+        x = Mathf.FloorToInt((world.x - origin.x) / cellSize);
+        y = Mathf.FloorToInt((world.y - origin.y) / cellSize);
         return x >= 0 && y >= 0 && x < width && y < height;
     }
 
     public Vector2 LocalToWorld(int x, int y)
     {
-        return floorTilemap.GetCellCenterWorld(new Vector3Int(bounds.xMin + x, bounds.yMin + y, 0));
+        return origin + new Vector2((x + 0.5f) * cellSize, (y + 0.5f) * cellSize);
     }
 
     public bool IsWalkable(int x, int y)
@@ -183,7 +209,7 @@ public class FlowField : MonoBehaviour
         if (floorTilemap == null) return;
         if (!IsBuilt) BuildGrid();
 
-        Vector3 size = floorTilemap.layoutGrid.cellSize * 0.9f;
+        Vector3 size = Vector3.one * cellSize * 0.9f;
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -191,14 +217,10 @@ public class FlowField : MonoBehaviour
                 int c = x + y * width;
                 Vector2 pos = LocalToWorld(x, y);
 
-                if (drawGrid)
+                if (drawGrid && (walkable[c] || floorTilemap.HasTile(floorTilemap.WorldToCell(pos))))
                 {
-                    Vector3Int cell = new Vector3Int(bounds.xMin + x, bounds.yMin + y, 0);
-                    if (walkable[c] || floorTilemap.HasTile(cell))
-                    {
-                        Gizmos.color = walkable[c] ? new Color(0f, 1f, 0f, 0.1f) : new Color(1f, 0f, 0f, 0.4f);
-                        Gizmos.DrawCube(pos, size);
-                    }
+                    Gizmos.color = walkable[c] ? new Color(0f, 1f, 0f, 0.1f) : new Color(1f, 0f, 0f, 0.4f);
+                    Gizmos.DrawCube(pos, size);
                 }
 
                 if (drawArrows && Application.isPlaying && next[c] >= 0)
