@@ -3,16 +3,17 @@ using UnityEngine;
 public class wallbuy_script : MonoBehaviour
 {
     [Header("Wall Buy Settings")]
-    [SerializeField] private int wall_buy_cost = 500;
-    [SerializeField] private string weaponName = "DMR-141";
+    [SerializeField] private int wall_buy_cost;
+    [SerializeField] private string weaponName;
 
     [Header("Weapon Stats")]
-    [SerializeField] public int wpn_buy_id = 1; // 0 is pistol, 1+ for wall weapons
-    [SerializeField] public int wpn_buy_mag_max = 8;
-    [SerializeField] public int wpn_buy_reserve_max = 96;
-    [SerializeField] public int wpn_buy_damage = 6;
-    [SerializeField] private float wpn_buy_reloadTime = 2.0f;
-    [SerializeField] public bool wpn_buy_upgraded = false;
+    [SerializeField] public int wpn_buy_id; // 0 is pistol, 1+ for wall weapons
+    [SerializeField] public int wpn_buy_mag_max;
+    [SerializeField] public int wpn_buy_reserve_max;
+    [SerializeField] public int wpn_buy_damage;
+    [SerializeField] private float wpn_buy_reloadTime;
+    [SerializeField] public float wpn_buy_fireRate;
+    [SerializeField] public bool wpn_buy_upgraded;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -151,6 +152,7 @@ public class wallbuy_script : MonoBehaviour
                 spaceman.wpn1_reserve = wpn_buy_reserve_max;
                 spaceman.wpn1_damage = wpn_buy_damage;
                 spaceman.wp1_reloadTime = wpn_buy_reloadTime;
+                spaceman.wp1_fireRate = wpn_buy_fireRate;
                 spaceman.wp1_upgraded = wpn_buy_upgraded;
                 break;
 
@@ -162,6 +164,7 @@ public class wallbuy_script : MonoBehaviour
                 spaceman.wpn2_reserve = wpn_buy_reserve_max;
                 spaceman.wpn2_damage = wpn_buy_damage;
                 spaceman.wp2_reloadTime = wpn_buy_reloadTime;
+                spaceman.wp2_fireRate = wpn_buy_fireRate;
                 spaceman.wp2_upgraded = wpn_buy_upgraded;
                 break;
 
@@ -173,6 +176,7 @@ public class wallbuy_script : MonoBehaviour
                 spaceman.wpn3_reserve = wpn_buy_reserve_max;
                 spaceman.wpn3_damage = wpn_buy_damage;
                 spaceman.wp3_reloadTime = wpn_buy_reloadTime;
+                spaceman.wp3_fireRate = wpn_buy_fireRate;
                 spaceman.wp3_upgraded = wpn_buy_upgraded;
                 break;
         }
