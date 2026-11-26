@@ -13,6 +13,7 @@ public class wallbuy_script : MonoBehaviour
     [SerializeField] public int wpn_buy_damage;
     [SerializeField] private float wpn_buy_reloadTime;
     [SerializeField] public float wpn_buy_fireRate;
+    [SerializeField] public bool wpn_buy_automatic;   // hold to keep firing
     [SerializeField] public bool wpn_buy_upgraded;
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -154,6 +155,7 @@ public class wallbuy_script : MonoBehaviour
                 spaceman.wp1_reloadTime = wpn_buy_reloadTime;
                 spaceman.wp1_fireRate = wpn_buy_fireRate;
                 spaceman.wp1_upgraded = wpn_buy_upgraded;
+                spaceman.wp1_automatic = wpn_buy_automatic;
                 break;
 
             case 1:
@@ -166,6 +168,7 @@ public class wallbuy_script : MonoBehaviour
                 spaceman.wp2_reloadTime = wpn_buy_reloadTime;
                 spaceman.wp2_fireRate = wpn_buy_fireRate;
                 spaceman.wp2_upgraded = wpn_buy_upgraded;
+                spaceman.wp2_automatic = wpn_buy_automatic;
                 break;
 
             case 2:
@@ -178,12 +181,16 @@ public class wallbuy_script : MonoBehaviour
                 spaceman.wp3_reloadTime = wpn_buy_reloadTime;
                 spaceman.wp3_fireRate = wpn_buy_fireRate;
                 spaceman.wp3_upgraded = wpn_buy_upgraded;
+                spaceman.wp3_automatic = wpn_buy_automatic;
                 break;
         }
 
         Debug.Log($"Purchased {weaponName} in slot {targetSlot + 1}!");
         Debug.Log($"Inventory: {string.Join(", ", spaceman.weapon_ids.ToArray())}");
         Debug.Log($"Active weapon: {spaceman.prime_wpn_id}");
+
+        // Switch to it right away so the purchase is felt immediately
+        spaceman.EquipWeapon(wpn_buy_id);
     }
 
 

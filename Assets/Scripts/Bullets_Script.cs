@@ -9,6 +9,8 @@ public class Bullets_Script : MonoBehaviour
     [SerializeField] private RunnerChase _runnerchase;
     [SerializeField] private Spaceman _spaceman;
     private Coroutine hitCoroutine;
+    [SerializeField] private LayerMask wallLayers;   // set to Walls
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,6 +32,13 @@ public class Bullets_Script : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // Hit a wall: stop here
+        if (((1 << collision.gameObject.layer) & wallLayers) != 0)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         if (collision.CompareTag("Enemy"))
         {
             EnemyHealth enemy = collision.GetComponentInParent<EnemyHealth>();

@@ -157,6 +157,9 @@ MonoBehaviour:
   _lifetime: 3
   _runnerchase: {fileID: 0}
   _spaceman: {fileID: 0}
+  wallLayers:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!50 &284353217887319197
 Rigidbody2D:
   serializedVersion: 5

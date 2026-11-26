@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
-public class Spaceman: MonoBehaviour
+public class Spaceman : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator anim;
@@ -62,7 +61,7 @@ public class Spaceman: MonoBehaviour
 
     [Header("Perks")]
     [SerializeField] public int perk_count = 0;
-    [SerializeField] public int max_perk_count =4;
+    [SerializeField] public int max_perk_count = 4;
     [SerializeField] public Dictionary<int, string> PERKS_ORDER = new Dictionary<int, string>();
     public int Scrap => scrap;
     //weapon stats
@@ -74,15 +73,16 @@ public class Spaceman: MonoBehaviour
     // Adding elements
     [SerializeField] public int prime_wpn_id = 0;
     [SerializeField] public int prime_wpn_mag_max = 8;
-    [SerializeField]public int prime_wpn_mag = 8;
-    [SerializeField]public int prime_wpn_reserve_max = 80;
-    [SerializeField]public int prime_wpn_reserve = 32;
+    [SerializeField] public int prime_wpn_mag = 8;
+    [SerializeField] public int prime_wpn_reserve_max = 80;
+    [SerializeField] public int prime_wpn_reserve = 32;
     [SerializeField] public int prime_wpn_damage = 4;
     [SerializeField] private float prime_wpn_reloadTime = 2.0f;
     [SerializeField] public int wpn_damage_multiplier = 1;
     [SerializeField] public float prime_fireRate = 0.1f;       // Time in seconds between shots (lower = faster)
     [SerializeField] public float nextFireTime = 0f;
     [SerializeField] public bool wpn_prime_upgraded = false;
+    [SerializeField] public bool prime_wpn_automatic = false;   // hold to keep firing
     [Header("Weapon Stats")]
     //weapon 1
     [SerializeField] public int wpn1_id = 0;
@@ -94,6 +94,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public float wp1_reloadTime = 2.0f;
     [SerializeField] public float wp1_fireRate = 0.1f;       // Time in seconds between shots (lower = faster)
     [SerializeField] public bool wp1_upgraded = false;
+    [SerializeField] public bool wp1_automatic = false;
     //weapon 2 - no weapon 2 yet
     [SerializeField] public int wpn2_id = 0;
     [SerializeField] public int wpn2_mag_max = 0;
@@ -104,6 +105,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public float wp2_reloadTime = 0f;
     [SerializeField] public float wp2_fireRate = 0.0f;       // Time in seconds between shots (lower = faster)
     [SerializeField] public bool wp2_upgraded = false;
+    [SerializeField] public bool wp2_automatic = false;
     //weapon 3 - no weapon 3 yet
     [SerializeField] public int wpn3_id = 0;
     [SerializeField] public int wpn3_mag_max = 0;
@@ -114,6 +116,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public float wp3_reloadTime = 0f;
     [SerializeField] public float wp3_fireRate = 0.0f;       // Time in seconds between shots (lower = faster)
     [SerializeField] public bool wp3_upgraded = false;
+    [SerializeField] public bool wp3_automatic = false;
     //PACKED BLAST
     private bool _thunderblast = false;
     // Direction Tracking
@@ -146,6 +149,7 @@ public class Spaceman: MonoBehaviour
     private float nextScanTime = 0f;
     private float nextShotTime = 0f;
     private bool wasAutoMode = false;
+    private InputAction shootAction;   // checked every frame so automatic weapons fire while held
 
     // Tags
     private const string EnemyTag = "Enemy";
@@ -174,6 +178,7 @@ public class Spaceman: MonoBehaviour
         {
             playerInput.SwitchCurrentActionMap(playerInput.defaultActionMap);
         }
+        if (playerInput != null) shootAction = playerInput.actions["Shoot"];
         if (boundsTilemap != null)
         {
             mapBounds = CamFollow.GetTilemapWorldBounds(boundsTilemap);
@@ -226,6 +231,9 @@ public class Spaceman: MonoBehaviour
             // Just switched back to manual: stop the leftover auto movement
             if (wasAutoMode) moveInput = Vector2.zero;
             wasAutoMode = false;
+
+            // Automatic weapons keep firing while the button is held
+            if (prime_wpn_automatic && shootAction != null && shootAction.IsPressed()) TryFire(false);
             return;
         }
         wasAutoMode = true;
@@ -417,22 +425,26 @@ public class Spaceman: MonoBehaviour
     public void OnShoot(InputValue value)
     {
         if (autoMode) return;
-        if (value.isPressed)
-        {
-            // Don't shoot while reloading
-            if (IsReloading==true) return;
-            if (prime_wpn_mag > 0)
-            {
-                Shoot();
-            }
-            else if(prime_wpn_mag<=0 && prime_wpn_reserve>0){
-                StartReload(); //reload time
+        if (value.isPressed) TryFire(true);
+    }
 
-            }
-            else
-            {
-                Debug.Log("No Ammo");
-            }
+    // All manual shooting goes through here so fire rate is always respected
+    private void TryFire(bool fromPress)
+    {
+        if (IsReloading) return;
+        if (Time.time < nextFireTime) return;   // Shoot() sets nextFireTime from prime_fireRate
+
+        if (prime_wpn_mag > 0)
+        {
+            Shoot();
+        }
+        else if (prime_wpn_reserve > 0)
+        {
+            StartReload();
+        }
+        else if (fromPress)
+        {
+            Debug.Log("No Ammo");   // only on a click, so holding doesn't spam the console
         }
     }
     private void Shoot()
@@ -474,7 +486,7 @@ public class Spaceman: MonoBehaviour
     }
     private void StartReload()
     {
-        if (IsReloading==true) return;
+        if (IsReloading == true) return;
 
         // Check if magazine is already full
         if (prime_wpn_mag >= prime_wpn_mag_max) return;
@@ -511,16 +523,16 @@ public class Spaceman: MonoBehaviour
     //INITIALIZE WEAPONS
     private void InitializeWeapons()
     {
-            // Initialize weapon slots
-            weapon_ids = new ArrayList()
+        // Initialize weapon slots
+        weapon_ids = new ArrayList()
         {
             0,  // Primary weapon
             -1, // Secondary weapon empty
             -1  // Third weapon empty
         };
 
-            // Initialize weapon upgrade statuses
-            WPNS_ORDER = new Dictionary<int, bool>()
+        // Initialize weapon upgrade statuses
+        WPNS_ORDER = new Dictionary<int, bool>()
         {
             { 0, false } // Pistol starts unupgraded
         };
@@ -647,6 +659,7 @@ public class Spaceman: MonoBehaviour
                 prime_wpn_reloadTime = wp1_reloadTime;
                 prime_fireRate = wp1_fireRate;
                 wpn_prime_upgraded = wp1_upgraded;
+                prime_wpn_automatic = wp1_automatic;
                 break;
 
             case 1:
@@ -658,6 +671,7 @@ public class Spaceman: MonoBehaviour
                 prime_wpn_reloadTime = wp2_reloadTime;
                 prime_fireRate = wp2_fireRate;
                 wpn_prime_upgraded = wp2_upgraded;
+                prime_wpn_automatic = wp2_automatic;
                 break;
 
             case 2:
@@ -669,6 +683,7 @@ public class Spaceman: MonoBehaviour
                 prime_wpn_reloadTime = wp3_reloadTime;
                 prime_fireRate = wp3_fireRate;
                 wpn_prime_upgraded = wp3_upgraded;
+                prime_wpn_automatic = wp3_automatic;
                 break;
         }
 
