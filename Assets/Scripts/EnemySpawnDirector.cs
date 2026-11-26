@@ -38,6 +38,7 @@ public class EnemySpawnDirector : MonoBehaviour
     [Header("Testing")]
     [SerializeField] private bool testMode = true;
     public bool TestMode { get => testMode; set => testMode = value; }
+    [SerializeField] private float testSpawnTime = 3f;
     private float testTimer = 0f;
 
     // grid stuff
