@@ -7,6 +7,7 @@ public class RunnerChase : MonoBehaviour, IWaveScalable
     [Header("Waves")]
     [SerializeField] private bool huntPlayer = false;
     [SerializeField] private float directChaseRange = 1.5f;
+    [SerializeField] private string flowFieldId = "default";   // "big" for large enemies
 
     [Header("Chase Settings")]
     [SerializeField] private float moveSpeed = 3f;
@@ -75,10 +76,11 @@ public class RunnerChase : MonoBehaviour, IWaveScalable
 
     private Vector2 GetChaseDirection(Vector2 toPlayer)
     {
-        if (toPlayer.magnitude < directChaseRange || FlowField.Instance == null)
+        FlowField field = FlowField.Get(flowFieldId);
+        if (toPlayer.magnitude < directChaseRange || field == null)
             return toPlayer.normalized;
 
-        Vector2 dir = FlowField.Instance.GetDirection(Center);
+        Vector2 dir = field.GetDirection(Center);
         return dir != Vector2.zero ? dir : toPlayer.normalized;
     }
 
