@@ -3,6 +3,13 @@ using UnityEngine;
 
 public class RunnerChase : MonoBehaviour
 {
+    // fires when any runner dies (WaveManager counts these)
+    public static event System.Action<GameObject> Died;
+
+    [Header("Waves")]
+    public bool huntPlayer = false;   // true = chase from anywhere, ignore detectionRange
+    private bool dead;
+
     [Header("Chase Settings")]
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float acceleration = 20f;
@@ -71,7 +78,7 @@ public class RunnerChase : MonoBehaviour
         else
         {
             Vector2 toPlayer = player.position - transform.position;
-            if (toPlayer.magnitude < detectionRange)
+            if (huntPlayer || toPlayer.magnitude < detectionRange)
                 targetVelocity = toPlayer.normalized * moveSpeed;
         }
 
@@ -114,6 +121,10 @@ public class RunnerChase : MonoBehaviour
 
     public void Die()
     {
+        if (dead) return;      // two bullets on the same frame can't kill it twice
+        dead = true;
+        Died?.Invoke(gameObject);
+
         CamFollow.Shake(0.12f, 0.1f);
         if (scrapPrefab != null)
         {
