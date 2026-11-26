@@ -80,6 +80,8 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int prime_wpn_damage = 4;
     [SerializeField] private float prime_wpn_reloadTime = 2.0f;
     [SerializeField] public int wpn_damage_multiplier = 1;
+    [SerializeField] public float prime_fireRate = 0.1f;       // Time in seconds between shots (lower = faster)
+    [SerializeField] public float nextFireTime = 0f;
     [SerializeField] public bool wpn_prime_upgraded = false;
     [Header("Weapon Stats")]
     //weapon 1
@@ -90,6 +92,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int wpn1_reserve = 32;
     [SerializeField] public int wpn1_damage = 4;
     [SerializeField] public float wp1_reloadTime = 2.0f;
+    [SerializeField] public float wp1_fireRate = 0.1f;       // Time in seconds between shots (lower = faster)
     [SerializeField] public bool wp1_upgraded = false;
     //weapon 2 - no weapon 2 yet
     [SerializeField] public int wpn2_id = 0;
@@ -99,6 +102,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int wpn2_reserve = 0;
     [SerializeField] public int wpn2_damage = 0;
     [SerializeField] public float wp2_reloadTime = 0f;
+    [SerializeField] public float wp2_fireRate = 0.0f;       // Time in seconds between shots (lower = faster)
     [SerializeField] public bool wp2_upgraded = false;
     //weapon 3 - no weapon 3 yet
     [SerializeField] public int wpn3_id = 0;
@@ -108,6 +112,7 @@ public class Spaceman: MonoBehaviour
     [SerializeField] public int wpn3_reserve = 0;
     [SerializeField] public int wpn3_damage = 0;
     [SerializeField] public float wp3_reloadTime = 0f;
+    [SerializeField] public float wp3_fireRate = 0.0f;       // Time in seconds between shots (lower = faster)
     [SerializeField] public bool wp3_upgraded = false;
     //PACKED BLAST
     private bool _thunderblast = false;
@@ -245,8 +250,11 @@ public class Spaceman: MonoBehaviour
         {
             autoAimDirection = moveInput.normalized;
         }
-
-        AutoShoot();
+        if (Time.time >= nextFireTime)
+        {
+            AutoShoot();
+            nextFireTime = Time.time + Mathf.Max(0.02f, prime_fireRate);
+        }
     }
 
     // --- AUTO MODE HELPERS ---
@@ -431,7 +439,7 @@ public class Spaceman: MonoBehaviour
     private void Shoot()
     {
         if (bulletPrefab == null) return;
-
+        nextFireTime = Time.time + Mathf.Max(0.02f, prime_fireRate);
         Vector2 dir = GetAimDirection();
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         Quaternion bulletRotation = Quaternion.Euler(0f, 0f, angle);
@@ -638,6 +646,7 @@ public class Spaceman: MonoBehaviour
                 prime_wpn_reserve = wpn1_reserve;
                 prime_wpn_damage = wpn1_damage;
                 prime_wpn_reloadTime = wp1_reloadTime;
+                prime_fireRate = wp1_fireRate;
                 wpn_prime_upgraded = wp1_upgraded;
                 break;
 
@@ -648,6 +657,7 @@ public class Spaceman: MonoBehaviour
                 prime_wpn_reserve = wpn2_reserve;
                 prime_wpn_damage = wpn2_damage;
                 prime_wpn_reloadTime = wp2_reloadTime;
+                prime_fireRate = wp2_fireRate;
                 wpn_prime_upgraded = wp2_upgraded;
                 break;
 
@@ -658,6 +668,7 @@ public class Spaceman: MonoBehaviour
                 prime_wpn_reserve = wpn3_reserve;
                 prime_wpn_damage = wpn3_damage;
                 prime_wpn_reloadTime = wp3_reloadTime;
+                prime_fireRate = wp3_fireRate;
                 wpn_prime_upgraded = wp3_upgraded;
                 break;
         }
