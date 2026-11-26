@@ -150,7 +150,6 @@ public class Spaceman: MonoBehaviour
     // Tags
     private const string EnemyTag = "Enemy";
     private const string AppleTag = "Apple";
-    private const string Lava_hazardTag = "Lava_Hazards";
     // Store a reference to the PowerPop currently in range
     private power_pop_script currentPowerPop;
     //Check if the player is in range of a wall buy LOCATION
@@ -690,11 +689,6 @@ public class Spaceman: MonoBehaviour
             Debug.Log($"Apple collected! Lives: {Lives} | Apples: {ItemsCount}");
         }
         */
-        if (collision.CompareTag(Lava_hazardTag))
-        {
-            lives -= 1;
-            Debug.Log("Get out of the lava");
-        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -702,7 +696,12 @@ public class Spaceman: MonoBehaviour
         // Enemy collision damage
         if (collision.gameObject.CompareTag(EnemyTag))
         {
-            TakeDamage(1, collision.transform.position);
+            // Enemy contact damage: only enemies with an EnemyContactDamage component hurt on touch
+            EnemyContactDamage hurt = collision.gameObject.GetComponentInParent<EnemyContactDamage>();
+            if (hurt != null && hurt.enabled)
+            {
+                TakeDamage(hurt.Damage, collision.transform.position);
+            }
         }
     }
 

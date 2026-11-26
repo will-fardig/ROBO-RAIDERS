@@ -32,20 +32,17 @@ public class Bullets_Script : MonoBehaviour
     {
         if (collision.CompareTag("Enemy"))
         {
-            RunnerChase enemy = collision.GetComponent<RunnerChase>();
-
+            EnemyHealth enemy = collision.GetComponentInParent<EnemyHealth>();
             if (enemy == null)
             {
-                Debug.LogError("Enemy collider has no RunnerChase component!", collision.gameObject);
+                Debug.LogError("Enemy collider has no EnemyHealth component!", collision.gameObject);
                 return;
             }
+            if (enemy.IsDead) return;
 
-            if (enemy.RunnerHealth <= 0) return;
-            bool killed = enemy.TakeHit(_spaceman.prime_wpn_damage *_spaceman.wpn_damage_multiplier, transform.right);
+            bool killed = enemy.TakeHit(_spaceman.prime_wpn_damage * _spaceman.wpn_damage_multiplier, transform.right);
             _spaceman.AddScrap(10 * _spaceman.wpn_damage_multiplier * _spaceman.point_multiplier);
             if (killed) _spaceman.AddScrap(100 * _spaceman.point_multiplier);
-
-            Debug.Log("Damage dealt. Remaining health: " + enemy.RunnerHealth);
 
             Destroy(gameObject);
         }

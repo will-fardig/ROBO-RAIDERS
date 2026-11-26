@@ -1,55 +1,37 @@
-using System.Collections;
 using UnityEngine;
 
-public class RunnerChase : MonoBehaviour
+// Runner movement: charge at the player along the flow field.
+// Health/hits/death live in EnemyHealth.
+public class RunnerChase : MonoBehaviour, IWaveScalable
 {
-    // fires when any runner dies (WaveManager counts these)
-    public static event System.Action<GameObject> Died;
-
     [Header("Waves")]
-    public bool huntPlayer = false;   // true = chase from anywhere, ignore detectionRange
-    [SerializeField] private float directChaseRange = 1.5f;  // this close, just go straight at the player
-    private bool dead;
+    [SerializeField] private bool huntPlayer = false;
+    [SerializeField] private float directChaseRange = 1.5f;
 
     [Header("Chase Settings")]
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float acceleration = 20f;
     [SerializeField] private float detectionRange = 8f;
-    [SerializeField] private float pauseAfterHit = 0.6f;  // backs off after hitting the player
+    [SerializeField] private float pauseAfterHit = 0.6f;
 
     [Header("Sprite")]
     [SerializeField] private bool spriteFacesRight = true;
 
-    [Header("Health")]
-    [SerializeField] public float RunnerHealth = 20;
-
-    [Header("Hit Feedback")]
-    [SerializeField] private Color flashColor = new Color(1f, 0.3f, 0.3f); // red tint
-    [SerializeField] private float flashDuration = 0.1f;
-    [SerializeField] private float knockbackSpeed = 6f;    // how hard bullets push it
-    [SerializeField] private float stunDuration = 0.15f;   // can't steer while stunned
-    [SerializeField] private float knockbackDrag = 40f;    // how fast the push slows down
-
-    [Header("Drops")]
-    [SerializeField] private GameObject scrapPrefab;
-    [SerializeField] private int scrapDropCount = 1;
-    [SerializeField] private float scatterRadius = 0.5f;
-
     private Rigidbody2D rb;
     private SpriteRenderer sr;
+    private Collider2D col;
+    private EnemyHealth health;
     private Transform player;
     private float pauseTimer = 0f;
-    private float stunTimer = 0f;
-    private Color originalColor;
-    private Coroutine flashRoutine;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+        col = GetComponent<Collider2D>();
+        health = GetComponent<EnemyHealth>();
         rb.gravityScale = 0f;
         rb.freezeRotation = true;
-        originalColor = sr.color;
     }
 
     private void Start()
@@ -58,16 +40,14 @@ public class RunnerChase : MonoBehaviour
         if (spaceman != null) player = spaceman.transform;
     }
 
+    public void ApplyWaveStats(EnemyWaveStats stats)
+    {
+        huntPlayer = stats.huntPlayer;
+    }
+
     private void FixedUpdate()
     {
-        // Knocked back: slide to a stop, no chasing, no turning around
-        if (stunTimer > 0f)
-        {
-            stunTimer -= Time.fixedDeltaTime;
-            rb.linearVelocity = Vector2.MoveTowards(rb.linearVelocity, Vector2.zero, knockbackDrag * Time.fixedDeltaTime);
-            return;
-        }
-
+        if (health != null && health.IsStunned) return;   // EnemyHealth is sliding us back
         if (player == null) return;
 
         Vector2 targetVelocity = Vector2.zero;
@@ -78,7 +58,7 @@ public class RunnerChase : MonoBehaviour
         }
         else
         {
-            Vector2 toPlayer = player.position - transform.position;
+            Vector2 toPlayer = (Vector2)player.position - Center;
             if (huntPlayer || toPlayer.magnitude < detectionRange)
                 targetVelocity = GetChaseDirection(toPlayer) * moveSpeed;
         }
@@ -91,61 +71,15 @@ public class RunnerChase : MonoBehaviour
             sr.flipX = spriteFacesRight;
     }
 
+    private Vector2 Center => col != null ? (Vector2)col.bounds.center : rb.position;
+
     private Vector2 GetChaseDirection(Vector2 toPlayer)
     {
-        // Close up, or no flow field in the scene: straight at the player like before
         if (toPlayer.magnitude < directChaseRange || FlowField.Instance == null)
             return toPlayer.normalized;
 
-        Vector2 dir = FlowField.Instance.GetDirection(rb.position);
-        return dir != Vector2.zero ? dir : toPlayer.normalized;   // no route from here? fall back
-    }
-
-    // Called by bullets. Returns true if this hit killed it.
-    public bool TakeHit(float damage, Vector2 hitDirection)
-    {
-        RunnerHealth -= damage;
-
-        if (RunnerHealth <= 0)
-        {
-            Die();
-            return true;
-        }
-
-        // Knockback + stun
-        rb.linearVelocity = hitDirection.normalized * knockbackSpeed;
-        stunTimer = stunDuration;
-
-        // Flash
-        if (flashRoutine != null) StopCoroutine(flashRoutine);
-        flashRoutine = StartCoroutine(Flash());
-
-        return false;
-    }
-
-    private IEnumerator Flash()
-    {
-        sr.color = flashColor;
-        yield return new WaitForSeconds(flashDuration);
-        sr.color = originalColor;
-    }
-
-    public void Die()
-    {
-        if (dead) return;      // two bullets on the same frame can't kill it twice
-        dead = true;
-        Died?.Invoke(gameObject);
-
-        CamFollow.Shake(0.12f, 0.1f);
-        if (scrapPrefab != null)
-        {
-            for (int i = 0; i < scrapDropCount; i++)
-            {
-                Vector2 offset = (i == 0) ? Vector2.zero : Random.insideUnitCircle * scatterRadius;
-                Instantiate(scrapPrefab, (Vector2)sr.bounds.center + offset, Quaternion.identity);
-            }
-        }
-        Destroy(gameObject);
+        Vector2 dir = FlowField.Instance.GetDirection(Center);
+        return dir != Vector2.zero ? dir : toPlayer.normalized;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
