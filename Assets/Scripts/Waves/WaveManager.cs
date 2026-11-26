@@ -127,7 +127,8 @@ public class WaveManager : MonoBehaviour
             ? EnemySpawnDirector.Formation.Single
             : (EnemySpawnDirector.Formation)Random.Range(1, director.FormationCount);
 
-        int spawned = director.SpawnGroup(point, 0, formation, size);
+        int type = Random.Range(0, director.EnemyTypeCount);   // equal odds for now
+        int spawned = director.SpawnGroup(point, type, formation, size);
         leftToSpawn -= spawned;
         return spawned > 0;
     }
