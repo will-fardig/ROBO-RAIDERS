@@ -87,6 +87,7 @@ public class Spaceman : MonoBehaviour
     [SerializeField] public float prime_bulletSize = 1f;        // 1 = bullet prefab's normal size
     [SerializeField] public float prime_spread = 0f;            // total cone in degrees (0 = laser accurate)
     [SerializeField] public int prime_pellets = 1;              // bullets per shot (shotguns > 1)
+    [SerializeField] public int prime_pierce = 0;               // extra enemies each bullet passes through
     [Header("Weapon Stats")]
     //weapon 1
     [SerializeField] public int wpn1_id = 0;
@@ -103,6 +104,7 @@ public class Spaceman : MonoBehaviour
     [SerializeField] public float wp1_bulletSize = 1f;
     [SerializeField] public float wp1_spread = 0f;
     [SerializeField] public int wp1_pellets = 1;
+    [SerializeField] public int wp1_pierce = 0;
     //weapon 2 - no weapon 2 yet
     [SerializeField] public int wpn2_id = 0;
     [SerializeField] public int wpn2_mag_max = 0;
@@ -118,6 +120,7 @@ public class Spaceman : MonoBehaviour
     [SerializeField] public float wp2_bulletSize = 1f;
     [SerializeField] public float wp2_spread = 0f;
     [SerializeField] public int wp2_pellets = 1;
+    [SerializeField] public int wp2_pierce = 0;
     //weapon 3 - no weapon 3 yet
     [SerializeField] public int wpn3_id = 0;
     [SerializeField] public int wpn3_mag_max = 0;
@@ -133,6 +136,7 @@ public class Spaceman : MonoBehaviour
     [SerializeField] public float wp3_bulletSize = 1f;
     [SerializeField] public float wp3_spread = 0f;
     [SerializeField] public int wp3_pellets = 1;
+    [SerializeField] public int wp3_pierce = 0;
     //PACKED BLAST
     private bool _thunderblast = false;
     // Direction Tracking
@@ -492,7 +496,7 @@ public class Spaceman : MonoBehaviour
             bullet.transform.localScale = bulletPrefab.transform.localScale * prime_bulletSize;
 
             Bullets_Script bs = bullet.GetComponent<Bullets_Script>();
-            if (bs != null) bs.Init(prime_bulletSpeed, damage);
+            if (bs != null) bs.Init(prime_bulletSpeed, damage, prime_pierce);
         }
     }
     //WEAPON RELOADS
@@ -692,6 +696,7 @@ public class Spaceman : MonoBehaviour
                 prime_bulletSize = wp1_bulletSize;
                 prime_spread = wp1_spread;
                 prime_pellets = wp1_pellets;
+                prime_pierce = wp1_pierce;
                 break;
 
             case 1:
@@ -708,6 +713,7 @@ public class Spaceman : MonoBehaviour
                 prime_bulletSize = wp2_bulletSize;
                 prime_spread = wp2_spread;
                 prime_pellets = wp2_pellets;
+                prime_pierce = wp2_pierce;
                 break;
 
             case 2:
@@ -724,6 +730,7 @@ public class Spaceman : MonoBehaviour
                 prime_bulletSize = wp3_bulletSize;
                 prime_spread = wp3_spread;
                 prime_pellets = wp3_pellets;
+                prime_pierce = wp3_pierce;
                 break;
         }
 

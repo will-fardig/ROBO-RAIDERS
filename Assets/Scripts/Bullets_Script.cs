@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Bullets_Script : MonoBehaviour
@@ -10,12 +11,15 @@ public class Bullets_Script : MonoBehaviour
 
     // Set by the gun when fired. -1 = not set, fall back to the player's current weapon.
     private float _damage = -1f;
+    private int _pierceLeft = 0;                                  // extra enemies it can still pass through
+    private readonly HashSet<EnemyHealth> _alreadyHit = new HashSet<EnemyHealth>();
 
     // Called by Spaceman.Shoot() right after the bullet is created
-    public void Init(float speed, float damage)
+    public void Init(float speed, float damage, int pierce = 0)
     {
         _speed = speed;
         _damage = damage;
+        _pierceLeft = Mathf.Max(0, pierce);
     }
 
     void Start()
@@ -48,12 +52,19 @@ public class Bullets_Script : MonoBehaviour
                 return;
             }
             if (enemy.IsDead) return;
+            if (!_alreadyHit.Add(enemy)) return;   // never hit the same enemy twice
 
             float damage = _damage >= 0f ? _damage : _spaceman.prime_wpn_damage * _spaceman.wpn_damage_multiplier;
             bool killed = enemy.TakeHit(damage, transform.right);
             _spaceman.AddScrap(10 * _spaceman.wpn_damage_multiplier * _spaceman.point_multiplier);
             if (killed) _spaceman.AddScrap(100 * _spaceman.point_multiplier);
 
+            // Pierce: keep flying through to the next enemy
+            if (_pierceLeft > 0)
+            {
+                _pierceLeft--;
+                return;
+            }
             Destroy(gameObject);
         }
     }
