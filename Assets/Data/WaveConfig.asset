@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: WaveConfig
   m_EditorClassIdentifier: Assembly-CSharp::WaveConfig
   enemyCount:
-    mode: 0
+    mode: 1
     baseValue: 10
-    perWave: 0
+    perWave: 2
     curve:
       serializedVersion: 2
       m_Curve:

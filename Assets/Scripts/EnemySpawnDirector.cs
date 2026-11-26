@@ -29,14 +29,15 @@ public class EnemySpawnDirector : MonoBehaviour
     [SerializeField] private LayerMask obstacleLayer;     
 
     [Header("Budget")]
+    public bool useBudget = true;
     public float budget = 10f;
     [SerializeField] private float maxBudget = 30f;
     [SerializeField] private float budgetPerSecond = 1f;
     private float startBudget;
 
     [Header("Testing")]
-    [SerializeField] private bool testMode = true;  // TURN OFF when the AI takes over
-    [SerializeField] private float testSpawnTime = 3f;
+    [SerializeField] private bool testMode = true;
+    public bool TestMode { get => testMode; set => testMode = value; }
     private float testTimer = 0f;
 
     // grid stuff
@@ -50,6 +51,7 @@ public class EnemySpawnDirector : MonoBehaviour
     public int totalKilled = 0;
 
     private Spaceman spaceman;
+    public event System.Action<GameObject> EnemySpawned;
 
     // handy for the agent later
     public int PointCount => points.Length;
@@ -148,7 +150,7 @@ public class EnemySpawnDirector : MonoBehaviour
         if (count > maxGroupSize) count = maxGroupSize;
         if (count > maxEnemies - aliveEnemies.Count) count = maxEnemies - aliveEnemies.Count;
 
-        int cost = GetCost(type);
+        int cost = useBudget ? GetCost(type) : 0;
         if (cost > 0)
         {
             int canAfford = Mathf.FloorToInt(budget / cost);
@@ -175,6 +177,7 @@ public class EnemySpawnDirector : MonoBehaviour
             aliveEnemies.Add(enemy);
             budget -= cost;
             spawned++;
+            EnemySpawned?.Invoke(enemy);
         }
 
         if (spawned > 0)
