@@ -8,6 +8,7 @@ public class RunnerChase : MonoBehaviour
 
     [Header("Waves")]
     public bool huntPlayer = false;   // true = chase from anywhere, ignore detectionRange
+    [SerializeField] private float directChaseRange = 1.5f;  // this close, just go straight at the player
     private bool dead;
 
     [Header("Chase Settings")]
@@ -79,7 +80,7 @@ public class RunnerChase : MonoBehaviour
         {
             Vector2 toPlayer = player.position - transform.position;
             if (huntPlayer || toPlayer.magnitude < detectionRange)
-                targetVelocity = toPlayer.normalized * moveSpeed;
+                targetVelocity = GetChaseDirection(toPlayer) * moveSpeed;
         }
 
         rb.linearVelocity = Vector2.MoveTowards(rb.linearVelocity, targetVelocity, acceleration * Time.fixedDeltaTime);
@@ -88,6 +89,16 @@ public class RunnerChase : MonoBehaviour
             sr.flipX = !spriteFacesRight;
         else if (rb.linearVelocity.x < -0.1f)
             sr.flipX = spriteFacesRight;
+    }
+
+    private Vector2 GetChaseDirection(Vector2 toPlayer)
+    {
+        // Close up, or no flow field in the scene: straight at the player like before
+        if (toPlayer.magnitude < directChaseRange || FlowField.Instance == null)
+            return toPlayer.normalized;
+
+        Vector2 dir = FlowField.Instance.GetDirection(rb.position);
+        return dir != Vector2.zero ? dir : toPlayer.normalized;   // no route from here? fall back
     }
 
     // Called by bullets. Returns true if this hit killed it.
