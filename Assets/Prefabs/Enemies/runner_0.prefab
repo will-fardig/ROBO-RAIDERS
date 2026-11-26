@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2972748287142276472}
   - component: {fileID: 5206667547166892015}
   - component: {fileID: -260455965545064450}
+  - component: {fileID: -8664061634082342905}
   m_Layer: 0
   m_Name: runner_0
   m_TagString: Enemy
@@ -224,3 +225,16 @@ MonoBehaviour:
   scrapPrefab: {fileID: 8095105526031272961, guid: 6186bf94d05c9a845a6cb6bf01474bb4, type: 3}
   scrapDropCount: 5
   scatterRadius: 0.5
+--- !u!114 &-8664061634082342905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2181836984580440452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b6d50a55ca36b74fac1a000d50fb68f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyContactDamage
+  damage: 1

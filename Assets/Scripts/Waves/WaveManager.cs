@@ -143,8 +143,10 @@ public class WaveManager : MonoBehaviour
     private void OnEnemySpawned(GameObject enemy)
     {
         alive.Add(enemy);
-        RunnerChase r = enemy.GetComponent<RunnerChase>();
-        if (r != null) r.huntPlayer = enemiesHuntPlayer;
+
+        EnemyWaveStats stats = new EnemyWaveStats { huntPlayer = enemiesHuntPlayer };
+        foreach (IWaveScalable s in enemy.GetComponentsInChildren<IWaveScalable>())
+            s.ApplyWaveStats(stats);
     }
 
     private void OnEnemyDied(GameObject enemy)
@@ -155,13 +157,13 @@ public class WaveManager : MonoBehaviour
     // The 10 hand-placed runners become wave 1
     private bool AdoptSceneEnemies()
     {
-        RunnerChase[] placed = FindObjectsByType<RunnerChase>(FindObjectsSortMode.None);
+        EnemyHealth[] placed = FindObjectsByType<EnemyHealth>(FindObjectsSortMode.None);
         if (placed.Length == 0) return false;
 
         currentWave = 1;
         currentParams = config.Evaluate(1);
         currentParams.enemyCount = placed.Length;
-        foreach (RunnerChase r in placed) OnEnemySpawned(r.gameObject);
+        foreach (EnemyHealth e in placed) OnEnemySpawned(e.gameObject);
 
         state = State.Clearing;
         Debug.Log($"[Waves] START wave 1 with {placed.Length} hand-placed runners");

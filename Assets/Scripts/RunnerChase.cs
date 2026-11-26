@@ -2,10 +2,10 @@ using UnityEngine;
 
 // Runner movement: charge at the player along the flow field.
 // Health/hits/death live in EnemyHealth.
-public class RunnerChase : MonoBehaviour
+public class RunnerChase : MonoBehaviour, IWaveScalable
 {
     [Header("Waves")]
-    public bool huntPlayer = false;   // true = chase from anywhere, ignore detectionRange
+    [SerializeField] private bool huntPlayer = false;
     [SerializeField] private float directChaseRange = 1.5f;
 
     [Header("Chase Settings")]
@@ -38,6 +38,11 @@ public class RunnerChase : MonoBehaviour
     {
         Spaceman spaceman = FindFirstObjectByType<Spaceman>();
         if (spaceman != null) player = spaceman.transform;
+    }
+
+    public void ApplyWaveStats(EnemyWaveStats stats)
+    {
+        huntPlayer = stats.huntPlayer;
     }
 
     private void FixedUpdate()

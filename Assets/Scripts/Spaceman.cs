@@ -696,7 +696,12 @@ public class Spaceman: MonoBehaviour
         // Enemy collision damage
         if (collision.gameObject.CompareTag(EnemyTag))
         {
-            TakeDamage(1, collision.transform.position);
+            // Enemy contact damage: only enemies with an EnemyContactDamage component hurt on touch
+            EnemyContactDamage hurt = collision.gameObject.GetComponentInParent<EnemyContactDamage>();
+            if (hurt != null && hurt.enabled)
+            {
+                TakeDamage(hurt.Damage, collision.transform.position);
+            }
         }
     }
 
