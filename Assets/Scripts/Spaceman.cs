@@ -83,6 +83,10 @@ public class Spaceman : MonoBehaviour
     [SerializeField] public float nextFireTime = 0f;
     [SerializeField] public bool wpn_prime_upgraded = false;
     [SerializeField] public bool prime_wpn_automatic = false;   // hold to keep firing
+    [SerializeField] public float prime_bulletSpeed = 8f;       // units per second
+    [SerializeField] public float prime_bulletSize = 1f;        // 1 = bullet prefab's normal size
+    [SerializeField] public float prime_spread = 0f;            // total cone in degrees (0 = laser accurate)
+    [SerializeField] public int prime_pellets = 1;              // bullets per shot (shotguns > 1)
     [Header("Weapon Stats")]
     //weapon 1
     [SerializeField] public int wpn1_id = 0;
@@ -95,6 +99,10 @@ public class Spaceman : MonoBehaviour
     [SerializeField] public float wp1_fireRate = 0.1f;       // Time in seconds between shots (lower = faster)
     [SerializeField] public bool wp1_upgraded = false;
     [SerializeField] public bool wp1_automatic = false;
+    [SerializeField] public float wp1_bulletSpeed = 8f;
+    [SerializeField] public float wp1_bulletSize = 1f;
+    [SerializeField] public float wp1_spread = 0f;
+    [SerializeField] public int wp1_pellets = 1;
     //weapon 2 - no weapon 2 yet
     [SerializeField] public int wpn2_id = 0;
     [SerializeField] public int wpn2_mag_max = 0;
@@ -106,6 +114,10 @@ public class Spaceman : MonoBehaviour
     [SerializeField] public float wp2_fireRate = 0.0f;       // Time in seconds between shots (lower = faster)
     [SerializeField] public bool wp2_upgraded = false;
     [SerializeField] public bool wp2_automatic = false;
+    [SerializeField] public float wp2_bulletSpeed = 8f;
+    [SerializeField] public float wp2_bulletSize = 1f;
+    [SerializeField] public float wp2_spread = 0f;
+    [SerializeField] public int wp2_pellets = 1;
     //weapon 3 - no weapon 3 yet
     [SerializeField] public int wpn3_id = 0;
     [SerializeField] public int wpn3_mag_max = 0;
@@ -117,6 +129,10 @@ public class Spaceman : MonoBehaviour
     [SerializeField] public float wp3_fireRate = 0.0f;       // Time in seconds between shots (lower = faster)
     [SerializeField] public bool wp3_upgraded = false;
     [SerializeField] public bool wp3_automatic = false;
+    [SerializeField] public float wp3_bulletSpeed = 8f;
+    [SerializeField] public float wp3_bulletSize = 1f;
+    [SerializeField] public float wp3_spread = 0f;
+    [SerializeField] public int wp3_pellets = 1;
     //PACKED BLAST
     private bool _thunderblast = false;
     // Direction Tracking
@@ -452,19 +468,31 @@ public class Spaceman : MonoBehaviour
         if (bulletPrefab == null) return;
         nextFireTime = Time.time + Mathf.Max(0.02f, prime_fireRate);
         Vector2 dir = GetAimDirection();
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        Quaternion bulletRotation = Quaternion.Euler(0f, 0f, angle);
+        float aimAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         Vector2 spawnPos = GetAimOrigin() + dir * muzzleDistance;
 
-        if (_thunderblast == false)
-        {
-            prime_wpn_mag -= 1;
-            Instantiate(bulletPrefab, spawnPos, bulletRotation);
-        }
-        else
+        if (_thunderblast)
         {
             _thunderblast = false;
-            Instantiate(specialBulletPrefab, spawnPos, bulletRotation);
+            Instantiate(specialBulletPrefab, spawnPos, Quaternion.Euler(0f, 0f, aimAngle));
+            return;
+        }
+
+        prime_wpn_mag -= 1;
+
+        // Damage is locked in now, so swapping guns mid-flight doesn't change it
+        float damage = prime_wpn_damage * wpn_damage_multiplier;
+        int pellets = Mathf.Max(1, prime_pellets);
+        float halfSpread = prime_spread * 0.5f;
+
+        for (int i = 0; i < pellets; i++)
+        {
+            float angle = aimAngle + UnityEngine.Random.Range(-halfSpread, halfSpread);
+            GameObject bullet = Instantiate(bulletPrefab, spawnPos, Quaternion.Euler(0f, 0f, angle));
+            bullet.transform.localScale = bulletPrefab.transform.localScale * prime_bulletSize;
+
+            Bullets_Script bs = bullet.GetComponent<Bullets_Script>();
+            if (bs != null) bs.Init(prime_bulletSpeed, damage);
         }
     }
     //WEAPON RELOADS
@@ -660,6 +688,10 @@ public class Spaceman : MonoBehaviour
                 prime_fireRate = wp1_fireRate;
                 wpn_prime_upgraded = wp1_upgraded;
                 prime_wpn_automatic = wp1_automatic;
+                prime_bulletSpeed = wp1_bulletSpeed;
+                prime_bulletSize = wp1_bulletSize;
+                prime_spread = wp1_spread;
+                prime_pellets = wp1_pellets;
                 break;
 
             case 1:
@@ -672,6 +704,10 @@ public class Spaceman : MonoBehaviour
                 prime_fireRate = wp2_fireRate;
                 wpn_prime_upgraded = wp2_upgraded;
                 prime_wpn_automatic = wp2_automatic;
+                prime_bulletSpeed = wp2_bulletSpeed;
+                prime_bulletSize = wp2_bulletSize;
+                prime_spread = wp2_spread;
+                prime_pellets = wp2_pellets;
                 break;
 
             case 2:
@@ -684,6 +720,10 @@ public class Spaceman : MonoBehaviour
                 prime_fireRate = wp3_fireRate;
                 wpn_prime_upgraded = wp3_upgraded;
                 prime_wpn_automatic = wp3_automatic;
+                prime_bulletSpeed = wp3_bulletSpeed;
+                prime_bulletSize = wp3_bulletSize;
+                prime_spread = wp3_spread;
+                prime_pellets = wp3_pellets;
                 break;
         }
 
