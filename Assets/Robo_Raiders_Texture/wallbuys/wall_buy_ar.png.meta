@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: cbd65d7f300a0f04392a0a4b799e3158
+guid: 1656a8d513ac4a44ab693b2f38614bb6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5282412756233544941
-    second: wall_buy_shotgun_0
+      213: -5725285769851912360
+    second: wall_buy_ar_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wall_buy_shotgun_0
+      name: wall_buy_ar_0
       rect:
         serializedVersion: 2
         x: 3
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: de4ea441a66ee4940800000000000000
-      internalID: 5282412756233544941
+      spriteID: 85fb06a1de2bb80b0800000000000000
+      internalID: -5725285769851912360
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      wall_buy_shotgun_0: 5282412756233544941
+      wall_buy_ar_0: -5725285769851912360
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

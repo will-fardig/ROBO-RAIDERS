@@ -175,7 +175,7 @@ public class Spaceman : MonoBehaviour
     private const string EnemyTag = "Enemy";
     private const string AppleTag = "Apple";
     // Store a reference to the PowerPop currently in range
-    private power_pop_script currentPowerPop;
+    private soda_script currentSoda;
     //Check if the player is in range of a wall buy LOCATION
     private wallbuy_script currentWallBuy;
     private void Awake()
@@ -204,6 +204,7 @@ public class Spaceman : MonoBehaviour
             mapBounds = CamFollow.GetTilemapWorldBounds(boundsTilemap);
             hasBounds = true;
         }
+        scrapUI?.UpdateScrap(scrap);
         InitializeWeapons();
     }
 
@@ -827,17 +828,17 @@ public class Spaceman : MonoBehaviour
     }
     //SODAS
     // Called by the power-up when you walk into its radius
-    public void RegisterPerks(power_pop_script powerPop)
+    public void RegisterPerks(soda_script soda)
     {
-        currentPowerPop = powerPop;
+        currentSoda = soda;
     }
 
     // Called by the power-up when you walk away
-    public void UnregisterPerks(power_pop_script powerPop)
+    public void UnregisterPerks(soda_script soda)
     {
-        if (currentPowerPop == powerPop)
+        if (currentSoda == soda)
         {
-            currentPowerPop = null;
+            currentSoda = null;
         }
     }
 
@@ -859,9 +860,9 @@ public class Spaceman : MonoBehaviour
     {
         if (value.isPressed)
         {
-            if (currentPowerPop != null)
+            if (currentSoda != null)
             {
-                TryBuyPerk(currentPowerPop, "Power Pop", currentPowerPop.powerPopCost); // Example perk name and cost
+                TryBuyPerk(currentSoda,currentSoda.perkName,currentSoda.perkID,currentSoda.sodaCost); // Example perk name and cost
             }
             else if (currentWallBuy != null)
             {
@@ -874,7 +875,7 @@ public class Spaceman : MonoBehaviour
         }
     }
     // --- PERK PURCHASE SYSTEM ---
-    public void TryBuyPerk(power_pop_script perkMachine, string perkName, int cost)
+    public void TryBuyPerk(soda_script perkMachine, string perkName, int perkID, int cost)
     {
         // 1. Check if the player already owns this specific perk
         if (PERKS_ORDER.ContainsValue(perkName))
@@ -896,19 +897,23 @@ public class Spaceman : MonoBehaviour
             Debug.Log($"Not enough scrap! Need {cost}, but you only have {scrap}.");
             return;
         }
-
-        // 4. Successful purchase! Deduct scrap and update UI
-        scrap -= cost;
-        if (scrapUI != null) scrapUI.UpdateScrap(scrap);
-
         // 5. Register the perk in tracking structures
-        PERKS_ORDER.Add(perk_count, perkName);
-        perk_count++;
+        if (perkID != 5) //unless it is pack a punch, it will not be added to the perks order dictionary
+        {
+            // 4. Successful purchase! Deduct scrap and update UI
+            scrap -= cost;
+            if (scrapUI != null) scrapUI.UpdateScrap(scrap);
+            PERKS_ORDER.Add(perk_count, perkName);
+            perk_count++;
+            // 6. Tell the machine to apply its unique perk effect to the player
+        }
 
         // 6. Tell the machine to apply its unique perk effect to the player
         perkMachine.ApplyEffect(this);
-
-        Debug.Log($"Successfully purchased {perkName}! Total Perks: {perk_count} | Scrap left: {scrap}");
+        if (perkID != 5)
+        {
+            Debug.Log($"Successfully purchased {perkName}! Total Perks: {perk_count} | Scrap left: {scrap}");
+        }
     }
     //try to buy a wall weapon
     // --- WALL-BUY PURCHASE SYSTEM (2-Weapon Max) ---
