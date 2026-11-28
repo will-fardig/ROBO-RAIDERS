@@ -15,6 +15,8 @@ public class Mod_Weapon_Script : MonoBehaviour
             spaceman.prime_wpn_reserve = spaceman.prime_wpn_reserve_max; // Refill reserve to new max
             spaceman.prime_wpn_automatic= true; // Make the primary weapon automatic
 
+            spaceman.prime_pellets = spaceman.prime_pellets * 2; // Double the pellets of the primary weapon
+
             Debug.Log("Primary weapon upgraded! Damage doubled.");
             if (spaceman.prime_wpn_id == spaceman.wpn1_id) //if it is equal to weapon 1 slot
             {
@@ -25,6 +27,7 @@ public class Mod_Weapon_Script : MonoBehaviour
                 spaceman.wpn1_damage = spaceman.prime_wpn_damage;
                 spaceman.wp1_upgraded = spaceman.wpn_prime_upgraded;
                 spaceman.wp1_automatic = spaceman.prime_wpn_automatic;
+                spaceman.wp1_pellets = spaceman.prime_pellets;
             }
             if (spaceman.prime_wpn_id == spaceman.wpn2_id) //if it is equal to weapon 2 slot
             {
@@ -35,6 +38,7 @@ public class Mod_Weapon_Script : MonoBehaviour
                 spaceman.wpn2_damage = spaceman.prime_wpn_damage;
                 spaceman.wp2_upgraded = spaceman.wpn_prime_upgraded;
                 spaceman.wp2_automatic = spaceman.prime_wpn_automatic;
+                spaceman.wp2_pellets = spaceman.prime_pellets;
             }
             if (spaceman.prime_wpn_id == spaceman.wpn3_id) //if it is equal to weapon 3 slot
             {
@@ -45,6 +49,7 @@ public class Mod_Weapon_Script : MonoBehaviour
                 spaceman.wpn3_damage = spaceman.prime_wpn_damage;
                 spaceman.wp3_upgraded = spaceman.wpn_prime_upgraded;
                 spaceman.wp3_automatic = spaceman.prime_wpn_automatic;
+                spaceman.wp3_pellets = spaceman.prime_pellets;
             }
         }
     }

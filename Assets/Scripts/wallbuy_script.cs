@@ -168,6 +168,15 @@ public class wallbuy_script : MonoBehaviour
                 spaceman.wp1_spread = wpn_buy_spread;
                 spaceman.wp1_pellets = wpn_buy_pellets;
                 spaceman.wp1_pierce = wpn_buy_pierce;
+                if (spaceman.PERKS_ORDER.ContainsValue("Double Trouble Tonic"))
+                {
+                    spaceman.wp1_fireRate = spaceman.wp1_fireRate / 2; // Double the fire rate of the primary weapon
+                    spaceman.wp1_pellets *=2; // Double the pellets of the primary weapon
+                }
+                if (spaceman.PERKS_ORDER.ContainsValue("Fizzy Fastness"))
+                {
+                    spaceman.wp1_reloadTime = spaceman.wp1_reloadTime / 2; // Double the fire rate of the primary weapon
+                }
                 break;
 
             case 1:
@@ -186,6 +195,15 @@ public class wallbuy_script : MonoBehaviour
                 spaceman.wp2_spread = wpn_buy_spread;
                 spaceman.wp2_pellets = wpn_buy_pellets;
                 spaceman.wp2_pierce = wpn_buy_pierce;
+                if (spaceman.PERKS_ORDER.ContainsValue("Double Trouble Tonic"))
+                {
+                    spaceman.wp2_fireRate = spaceman.wp2_fireRate / 2; // Double the fire rate of the primary weapon
+                    spaceman.wp2_pellets *= 2; // Double the pellets of the primary weapon
+                }
+                if (spaceman.PERKS_ORDER.ContainsValue("Fizzy Fastness"))
+                {
+                    spaceman.wp2_reloadTime = spaceman.wp2_reloadTime / 2; // Double the fire rate of the primary weapon
+                }
                 break;
 
             case 2:
@@ -204,6 +222,15 @@ public class wallbuy_script : MonoBehaviour
                 spaceman.wp3_spread = wpn_buy_spread;
                 spaceman.wp3_pellets = wpn_buy_pellets;
                 spaceman.wp3_pierce = wpn_buy_pierce;
+                if (spaceman.PERKS_ORDER.ContainsValue("Double Trouble Tonic"))
+                {
+                    spaceman.wp3_fireRate = spaceman.wp3_fireRate / 2; // Double the fire rate of the primary weapon
+                    spaceman.wp3_pellets *= 2; // Double the pellets of the primary weapon
+                }
+                if (spaceman.PERKS_ORDER.ContainsValue("Fizzy Fastness"))
+                {
+                    spaceman.wp3_reloadTime = spaceman.wp3_reloadTime / 2; // Double the fire rate of the primary weapon
+                }
                 break;
         }
 

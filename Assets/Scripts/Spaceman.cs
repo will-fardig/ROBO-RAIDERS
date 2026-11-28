@@ -77,7 +77,7 @@ public class Spaceman : MonoBehaviour
     [SerializeField] public int prime_wpn_reserve_max = 80;
     [SerializeField] public int prime_wpn_reserve = 32;
     [SerializeField] public int prime_wpn_damage = 4;
-    [SerializeField] private float prime_wpn_reloadTime = 2.0f;
+    [SerializeField] public float prime_wpn_reloadTime = 2.0f;
     [SerializeField] public int wpn_damage_multiplier = 1;
     [SerializeField] public float prime_fireRate = 0.1f;       // Time in seconds between shots (lower = faster)
     [SerializeField] public float nextFireTime = 0f;
@@ -87,7 +87,7 @@ public class Spaceman : MonoBehaviour
     [SerializeField] public float prime_bulletSize = 1f;        // 1 = bullet prefab's normal size
     [SerializeField] public float prime_spread = 0f;            // total cone in degrees (0 = laser accurate)
     [SerializeField] public int prime_pellets = 1;              // bullets per shot (shotguns > 1)
-    [SerializeField] public int prime_pierce = 0;               // extra enemies each bullet passes through
+    [SerializeField] public int prime_pierce = 0;// extra enemies each bullet passes through
     [Header("Weapon Stats")]
     //weapon 1
     [SerializeField] public int wpn1_id = 0;

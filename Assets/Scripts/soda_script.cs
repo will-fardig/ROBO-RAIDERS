@@ -49,6 +49,17 @@ public class soda_script : MonoBehaviour
             spaceman.wp1_fireRate = spaceman.wp1_fireRate / 2;
             spaceman.wp2_fireRate = spaceman.wp2_fireRate / 2;
             spaceman.wp3_fireRate = spaceman.wp3_fireRate / 2;
+            spaceman.prime_pellets = spaceman.prime_pellets * 2;
+            spaceman.wp1_pellets = spaceman.wp1_pellets * 2;
+            spaceman.wp2_pellets = spaceman.wp2_pellets * 2;
+            spaceman.wp3_pellets = spaceman.wp3_pellets * 2;
+        }
+        else if (perkID == 3)
+        {
+            spaceman.prime_wpn_reloadTime = spaceman.prime_wpn_reloadTime / 2;
+            spaceman.wp1_reloadTime = spaceman.wp1_reloadTime / 2;
+            spaceman.wp2_reloadTime = spaceman.wp2_reloadTime / 2;
+            spaceman.wp3_reloadTime = spaceman.wp3_reloadTime / 2;
         }
         else if (perkID == 5)
         {
